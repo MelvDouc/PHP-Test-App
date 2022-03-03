@@ -1,0 +1,27 @@
+{
+    "name": "melvdouc/testapp",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Melvin DOUCET",
+            "email": "melv.douc@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "TestApp\\": "src/"
+        }
+    },
+    "require": {
+        "pug-php/pug": "^3.5",
+        "phpmailer/phpmailer": "^6.6"
+    },
+    "config": {
+        "allow-plugins": {
+            "nodejs-php-fallback/nodejs-php-fallback": true
+        }
+    },
+    "require-dev": {
+        "vlucas/phpdotenv": "^5.4"
+    }
+}

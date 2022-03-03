@@ -1,0 +1,8 @@
+extends /_layout.pug
+
+block vars
+  - const title = `Profil de ${username}`
+
+block main
+  div
+    a(href=app.route("sign-out")) Déconnexion
