@@ -59,24 +59,28 @@ class Database
     }
   }
 
-  public function getOne(string $tableName, array $search = [])
+  public function getOne(string $tableName, array $filter)
   {
-    $whereClause = ($search)
-      ? $this->getPlaceholders($search, " AND ")
+    $whereClause = ($filter)
+      ? $this->getPlaceholders($filter, " AND ")
       : "1";
     $statement = $this->prepare("SELECT * FROM $tableName WHERE $whereClause");
-    $this->bindValues($statement, array_values($search));
+    $this->bindValues($statement, array_values($filter));
 
     $statement->execute();
     return $statement->fetch();
   }
 
-  public function getAll(string $tableName, string $column = "*"): array
+  public function getAll(string $tableName, array $filter = []): array
   {
-    $rows = $this
-      ->query("SELECT $column FROM $tableName")
-      ->fetchAll(PDO::FETCH_COLUMN);
-    return (!$rows) ? [] : $rows;
+    $whereClause = ($filter)
+      ? $this->getPlaceholders($filter, " AND ")
+      : "1";
+    $statement = $this->prepare("SELECT * FROM $tableName WHERE $whereClause");
+    $this->bindValues($statement, array_values($filter));
+
+    $statement->execute();
+    return $statement->fetchAll();
   }
 
   public function insert(string $tableName, array $keyValuePairs): bool

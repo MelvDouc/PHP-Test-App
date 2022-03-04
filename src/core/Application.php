@@ -40,6 +40,9 @@ class Application
     return $this->routes[$name]["path"];
   }
 
+  /**
+   * Find the registered path and method matching the current URL. Run the corresponding controller method if found, else set 404 response.
+   */
   public function run(): void
   {
     $req = new Request();
@@ -64,5 +67,8 @@ class Application
       call_user_func($route["methods"][$httpMethod], $req, $res);
       return;
     }
+
+    // If required path wasn't found
+    $res->redirectNotFound();
   }
 }

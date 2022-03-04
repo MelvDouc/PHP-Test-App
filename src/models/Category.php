@@ -1,12 +1,13 @@
 <?php
 
-use TestApp\Core\Application;
+namespace TestApp\Models;
+
 use TestApp\Core\Model;
+use TestApp\Core\Application;
 
 class Category extends Model
 {
   public static $TABLE_NAME = "category";
-  public static $enumerables = ["id", "name", "description", "image", "created_at"];
 
   public static function findOne(array $search)
   {
@@ -22,6 +23,11 @@ class Category extends Model
       ->setCreatedAt($dbRow["created_at"]);
 
     return $instance;
+  }
+
+  public static function findAll(array $filter = []): array
+  {
+    return Application::getDb()->getAll(self::$TABLE_NAME, $filter);
   }
 
   private string $name;

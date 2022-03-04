@@ -26,6 +26,15 @@ class Router
     return $this->routes;
   }
 
+  public function addRoute(string $name, array $params): Router
+  {
+    $this->routes[$name] = [
+      "path" => $this->prefix($params["path"]),
+      "methods" => $params["methods"]
+    ];
+    return $this;
+  }
+
   public function setRoutes(array $routes): Router
   {
     $this->routes = array_map(function ($item) {

@@ -7,6 +7,8 @@ header
         li
           a(href=app.route("home")) Accueil
         li
+          a(href=app.route("categories")) Catégories
+        li
           if app.user
             a(href=app.route("profile-home", {username: app.user.username})) Mon profil
           else
