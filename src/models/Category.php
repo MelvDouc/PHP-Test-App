@@ -13,9 +13,14 @@ class Category extends Model
     $dbRow = Application::getDb()->getOne(self::$TABLE_NAME, $search);
     if (!$dbRow)
       return null;
-    $instance = new self;
-    foreach (self::$enumerables as $enumerable)
-      $instance->{$enumerable} = $dbRow[$enumerable];
+    $instance = new Category();
+    $instance
+      ->setId($dbRow["id"])
+      ->setName($dbRow["name"])
+      ->setDescription($dbRow["description"])
+      ->setImage($dbRow["image"])
+      ->setCreatedAt($dbRow["created_at"]);
+
     return $instance;
   }
 

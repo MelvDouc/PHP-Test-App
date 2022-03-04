@@ -8,6 +8,6 @@ header
           a(href=app.route("home")) Accueil
         li
           if app.user
-            a(href=app.route("profile-home", {id: app.user.id})) Mon profil
+            a(href=app.route("profile-home", {username: app.user.username})) Mon profil
           else
             a(href=app.route("sign-in")) Connexion / Inscription

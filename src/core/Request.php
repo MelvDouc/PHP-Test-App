@@ -32,6 +32,12 @@ class Request
     return $this;
   }
 
+  public function setParams(mixed $value): Request
+  {
+    $this->params = $value;
+    return $this;
+  }
+
   public function getBody(): array
   {
     return array_map("trim", $_POST);

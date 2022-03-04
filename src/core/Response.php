@@ -15,7 +15,7 @@ class Response
   {
     return [
       "route" => function ($routeName, $context = []) {
-        return $this->addContextToPath(
+        return Path::addContext(
           Application::$instance->getPathByName($routeName),
           $context
         );
@@ -29,20 +29,6 @@ class Response
         ->getErrorMessages(),
       "formData" => $this->session->getFormData() ?? []
     ];
-  }
-
-  private function addContextToPath(string $path, array $context = []): string
-  {
-    $path = explode("/", $path);
-
-    foreach ($path as $i => $segment) {
-      if (!str_contains($segment, ":"))
-        continue;
-      $key = substr($segment, 1);
-      $path[$i] = $context[$key];
-    }
-
-    return implode("/", $path);
   }
 
   public function render(string $template, array $locals = []): void
@@ -59,7 +45,7 @@ class Response
   public function redirect(string $routeName, array $context = []): void
   {
     $path = Application::$instance->getPathByName($routeName);
-    $path = $this->addContextToPath($path, $context);
+    $path = Path::addContext($path, $context);
     header("Location: $path");
   }
 

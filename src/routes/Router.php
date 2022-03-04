@@ -57,7 +57,7 @@ $authRouter->setRoutes([
 $profileRouter = new Router("/profil");
 $profileRouter->setRoutes([
   "profile-home" => [
-    "path" => "/:id",
+    "path" => "/:username",
     "methods" => [
       "GET" => [ProfileController::class, "index"]
     ]

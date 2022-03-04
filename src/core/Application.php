@@ -19,22 +19,6 @@ class Application
     return self::$instance->db;
   }
 
-  private function doRoutesMatch(array $dynamicPathSegments, array $staticPathSegments): bool
-  {
-    if (count($dynamicPathSegments) !== count($staticPathSegments))
-      return false;
-
-    foreach ($dynamicPathSegments as $i => $segment) {
-      if ($segment === $staticPathSegments[$i])
-        continue;
-
-      if (!str_contains($segment, ":"))
-        return false;
-    }
-
-    return true;
-  }
-
   public Database $db;
   private array $routes = [];
 
@@ -60,13 +44,13 @@ class Application
   {
     $req = new Request();
     $res = new Response();
-    $staticPathSegments = explode("/", $req->getPath());
+    $staticPath = $req->getPath();
     $httpMethod = $req->getMethod();
 
     foreach ($this->routes as $route) {
-      $dynamicPathSegments = explode("/", $route["path"]);
+      $dynamicPath = $route["path"];
 
-      if (!$this->doRoutesMatch($dynamicPathSegments, $staticPathSegments))
+      if (!Path::compare($dynamicPath, $staticPath))
         continue;
 
       if (!array_key_exists($httpMethod, $route["methods"])) {
@@ -74,9 +58,8 @@ class Application
         return;
       }
 
-      foreach ($dynamicPathSegments as $i => $segment)
-        if (str_contains($segment, ":"))
-          $req->setParam(substr($segment, 1), $staticPathSegments[$i]);
+      $params = Path::getParamsMap($dynamicPath, $staticPath);
+      $req->setParams($params);
 
       call_user_func($route["methods"][$httpMethod], $req, $res);
       return;

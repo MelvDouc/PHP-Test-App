@@ -2,6 +2,7 @@
 
 namespace TestApp\Controllers;
 
+use TestApp\Core\Application;
 use TestApp\Core\Request;
 use TestApp\Core\Response;
 use TestApp\Models\User;
@@ -10,22 +11,15 @@ class ProfileController
 {
   public static function index(Request $req, Response $res)
   {
-    $id = $req->getParams()["id"];
+    $username = $req->getParams()["username"] ?? null;
 
-    if (!$id)
-      exit("No id.");
+    if (!$username)
+      exit("No username.");
 
-    $user = User::findOne(["id" => $id]);
+    $user = User::findOne(["username" => $username]);
 
     if (!$user)
       exit("No user.");
-    // $query = $req->getQuery();
-
-    // if (!($username = $query["pseudo"]))
-    //   exit("No username.");
-
-    // if (!($user = User::findOne(["username" => $username])))
-    //   exit("user not found");
 
     $res->render("profile/index", [
       "username" => $user->getUsername()

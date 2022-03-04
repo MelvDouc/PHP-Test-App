@@ -51,7 +51,7 @@ class AuthController extends Controller
         "created_at" => $user->getCreatedAt()
       ]);
     $res->redirect("profile-home", [
-      "pseudo" => $user->getUsername()
+      "username" => $user->getUsername()
     ]);
   }
 
@@ -156,7 +156,7 @@ class AuthController extends Controller
 
     $res->session->setErrorMessages(["Vous êtes déjà connecté."]);
     $res->redirect("profile-home", [
-      "id" => $user["id"]
+      "username" => $user["username"]
     ]);
     die;
   }
