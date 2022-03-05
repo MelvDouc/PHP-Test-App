@@ -18,23 +18,32 @@ class AuthController extends Controller
   public static function signIn_POST(Request $req, Response $res)
   {
     $body = $req->getBody();
-    $email = $body["email"];
+    $usernameOrEmail = $body["username_or_email"];
     $password = $body["password"];
 
     $error = null;
-    if (!$email || !$password)
+    if (!$usernameOrEmail || !$password)
       $error = "Veuillez remplir tous les champs.";
-    else if (
-      !($user = User::findOne(["email" => $email]))
-      || !password_verify($password, $user->getPassword())
-    )
-      $error = "Identifiants incorrects.";
-    else if (!$user->isVerified())
-      $error = "Vous devez d'abord activer votre compte de pouvoir vous connecter.";
+    else {
+      $user = User::findOne([
+        "OR" => [
+          "username" => $usernameOrEmail,
+          "email" => $usernameOrEmail
+        ]
+      ]);
+
+      if (!$user || !password_verify($password, $user->getPassword()))
+        $error = "Identifiants incorrects.";
+
+      else {
+        if (!$user->isVerified())
+          $error = "Vous devez d'abord activer votre compte de pouvoir vous connecter.";
+      }
+    }
 
     if ($error) {
       $res->session->setErrorMessages([$error]);
-      $res->session->setFormData(["email" => $email ?? ""]);
+      $res->session->setFormData(["username_or_email" => $usernameOrEmail ?? ""]);
       return self::redirectToSignIn($res);
     }
 
@@ -107,6 +116,7 @@ class AuthController extends Controller
 
   public static function activateAccount(Request $req, Response $res)
   {
+    self::redirectUserIfSignedIn($res);
     $verifString = $req->getParam("verifString");
 
     if (!$verifString)
@@ -118,7 +128,7 @@ class AuthController extends Controller
       return $res->redirect("home");
 
     $user->verify();
-    $res->session->setSuccessMessage("Votre compte est à présent actif.");
+    $res->session->setSuccessMessage("Votre compte est à présent actif. Il ne vous reste plus qu'à vous connecter.");
     self::redirectToSignIn($res);
   }
 
