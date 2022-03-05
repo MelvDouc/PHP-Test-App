@@ -23,7 +23,6 @@ $homeRouter
     ]
   ]);
 
-
 $authRouter = new Router("/auth");
 $authRouter
   ->addRoute("sign-in", [
@@ -47,7 +46,7 @@ $authRouter
     ]
   ])
   ->addRoute("activate-account", [
-    "path" => "/activation-compte",
+    "path" => "/activation-compte/:verifString",
     "methods" => [
       "GET" => [AuthController::class, "activateAccount"]
     ]
@@ -62,9 +61,16 @@ $profileRouter->addRoute("profile-home", [
 ]);
 
 $categoryRouter = new Router("/categories");
-$categoryRouter->addRoute("categories", [
-  "path" => "/",
-  "methods" => [
-    "GET" => [CategoryController::class, "all"]
-  ]
-]);
+$categoryRouter
+  ->addRoute("categories", [
+    "path" => "/",
+    "methods" => [
+      "GET" => [CategoryController::class, "all"]
+    ]
+  ])
+  ->addRoute("category", [
+    "path" => "/:category",
+    "methods" => [
+      "GET" => [CategoryController::class, "single"]
+    ]
+  ]);

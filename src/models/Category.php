@@ -2,16 +2,17 @@
 
 namespace TestApp\Models;
 
+use DateTime;
 use TestApp\Core\Model;
 use TestApp\Core\Application;
 
 class Category extends Model
 {
-  public static $TABLE_NAME = "category";
+  public const TABLE_NAME = "category";
 
   public static function findOne(array $search)
   {
-    $dbRow = Application::getDb()->getOne(self::$TABLE_NAME, $search);
+    $dbRow = Application::getDb()->getOne(self::TABLE_NAME, $search);
     if (!$dbRow)
       return null;
     $instance = new Category();
@@ -20,14 +21,14 @@ class Category extends Model
       ->setName($dbRow["name"])
       ->setDescription($dbRow["description"])
       ->setImage($dbRow["image"])
-      ->setCreatedAt($dbRow["created_at"]);
+      ->setCreatedAt(new DateTime($dbRow["created_at"]));
 
     return $instance;
   }
 
   public static function findAll(array $filter = []): array
   {
-    return Application::getDb()->getAll(self::$TABLE_NAME, $filter);
+    return Application::getDb()->getAll(self::TABLE_NAME, $filter);
   }
 
   private string $name;
@@ -65,5 +66,10 @@ class Category extends Model
   {
     $this->image = $value;
     return $this;
+  }
+
+  public function getProducts(): array
+  {
+    return Product::findAll(["category_id" => $this->getId()]);
   }
 }

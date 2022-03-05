@@ -16,4 +16,23 @@ class CategoryController extends Controller
       "categories" => $categories
     ]);
   }
+
+  public static function single(Request $req, Response $res)
+  {
+    $categoryName = $req->getParam("category");
+
+    if (!$categoryName)
+      exit("not found");
+
+    $category = Category::findOne(["name" => $categoryName]);
+
+    if (!$category)
+      exit("not found (2)");
+
+    $products = $category->getProducts();
+    $res->render("categories/single", [
+      "category" => $category,
+      "products" => $products
+    ]);
+  }
 }

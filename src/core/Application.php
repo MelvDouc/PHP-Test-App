@@ -7,13 +7,6 @@ class Application
   public static string $ROOT_DIR;
   public static Application $instance;
 
-  public static function vardump(mixed $arg): void
-  {
-    echo "<pre>";
-    var_dump($arg);
-    echo "</pre>";
-  }
-
   public static function getDb(): Database
   {
     return self::$instance->db;

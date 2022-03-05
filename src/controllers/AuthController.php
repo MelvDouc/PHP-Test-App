@@ -110,8 +110,7 @@ class AuthController extends Controller
 
   public static function activateAccount(Request $req, Response $res)
   {
-    $query = $req->getQuery();
-    $verifString = $query["verif-string"] ?? null;
+    $verifString = $req->getParam("verifString");
 
     if (!$verifString)
       return $res->redirect("home");

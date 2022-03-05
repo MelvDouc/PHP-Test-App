@@ -1,0 +1,10 @@
+extends /_layout.pug
+
+block vars
+  - const title = `Catégorie ${category.name}`
+
+block main
+  p=category.description
+
+  each product in products
+    div=product.name

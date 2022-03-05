@@ -6,4 +6,5 @@ block vars
 block main
   if categories.length
     each category in categories
-      p=category.name
+      div
+        a(href=`/categories/${category.name}`)=category.name

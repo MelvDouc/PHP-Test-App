@@ -21,6 +21,11 @@ class Request
     return $_GET;
   }
 
+  public function getParam(string $key): string|null
+  {
+    return $this->params[$key] ?? null;
+  }
+
   public function getParams(): array
   {
     return $this->params;

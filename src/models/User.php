@@ -11,11 +11,11 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class User extends Model
 {
-  public static string $TABLE_NAME = "user";
+  public const TABLE_NAME = "user";
 
   public static function findOne(array $search): User|null
   {
-    $dbRow = Application::getDb()->getOne(self::$TABLE_NAME, $search);
+    $dbRow = Application::getDb()->getOne(self::TABLE_NAME, $search);
     if (!$dbRow)
       return null;
     $user = new User();
@@ -116,7 +116,7 @@ class User extends Model
   public function save(): void
   {
     $this->verifString = self::generateVerifString();
-    $insertion = Application::getDb()->insert(self::$TABLE_NAME, [
+    $insertion = Application::getDb()->insert(self::TABLE_NAME, [
       "username" => $this->username,
       "email" => $this->email,
       "password" => $this->password,
@@ -128,22 +128,25 @@ class User extends Model
 
   public function verify()
   {
-    Application::getDb()->update(self::$TABLE_NAME, [
+    Application::getDb()->update(self::TABLE_NAME, [
       "verif_string" => null,
       "is_verified" => 1
-    ], $this->id);
+    ], $this->getId());
   }
 
-  public function notify(): void
+  public function notify(): bool
   {
     $email = new PHPMailer(true);
     $dotenv = \Dotenv\Dotenv::createImmutable(Application::$ROOT_DIR);
     $dotenv->load();
     $adminEmail = $_ENV["ADMIN_EMAIL_ADDRESS"];
-    $htmlBody = preg_replace_callback("/{{[^{}]+}}/", function ($matches) {
-      $prop = substr($matches[0], 2, strlen($matches[0]) - 2 * 2);
-      return $this->{$prop};
-    }, file_get_contents(Application::$ROOT_DIR . "/email-templates/account-activation.html"));
+    $host = $_ENV["HOST"];
+    $pug = new \Pug\Pug();
+    $htmlBody = $pug->render(Application::$ROOT_DIR . "/views/email-templates/account-activation.pug", [
+      "username" => $this->getUsername(),
+      "host" => $host,
+      "verifString" => $this->getVerifString()
+    ]);
 
     try {
       $email->SMTPDebug = SMTP::DEBUG_SERVER;
@@ -160,10 +163,9 @@ class User extends Model
       $email->isHTML(true);
       $email->Subject = "Activez votre compte";
       $email->Body = $htmlBody;
-      $email->send();
+      return $email->send();
     } catch (PHPMailerException $e) {
-      Application::vardump($e);
-      return;
+      return false;
     }
   }
 }
