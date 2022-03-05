@@ -136,10 +136,14 @@ class User extends Model
 
   public function verify()
   {
-    Application::getDb()->update(self::TABLE_NAME, [
-      "verif_string" => null,
-      "is_verified" => 1
-    ], $this->getId());
+    Application::getDb()->update(
+      self::TABLE_NAME,
+      [
+        "verif_string" => null,
+        "is_verified" => 1
+      ],
+      ["id" => $this->getId()]
+    );
   }
 
   public function notify(): bool

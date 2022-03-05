@@ -7,10 +7,9 @@ use PDOStatement;
 
 class Database
 {
-  public static array $comparers = [">", ">=", "<", "<=", "LIKE"];
-  public static array $logicalOperators = ["AND", "OR"];
+  private static array $comparers = [">", ">=", "<", "<=", "LIKE"];
 
-  public static function parseWhereClause(array $filter, string $comparer = "=", string $logicalOperator = null): array
+  private static function escapeQuery(array $filter, string $comparer = "=", string $logicalOperator = null): array
   {
     if (!$filter)
       return [
@@ -23,14 +22,14 @@ class Database
 
     foreach ($filter as $key => $value) {
       if (in_array($key, self::$comparers)) {
-        $result = self::parseWhereClause($value, $key, $logicalOperator);
+        $result = self::escapeQuery($value, $key, $logicalOperator);
         array_push($placeholders, $result["placeholders"]);
         array_push($values, ...$result["values"]);
         continue;
       }
 
-      if (in_array($key, self::$logicalOperators)) {
-        $result = self::parseWhereClause($value, $comparer, $key);
+      if ($key === "AND" || $key === "OR") {
+        $result = self::escapeQuery($value, $comparer, $key);
         array_push($placeholders, $result["placeholders"]);
         array_push($values, ...$result["values"]);
         continue;
@@ -51,31 +50,7 @@ class Database
     $this->connect();
   }
 
-  private function query(string $sql): PDOStatement|false
-  {
-    return $this->db->query($sql);
-  }
-
-  private function prepare(string $sql): PDOStatement|false
-  {
-    return $this->db->prepare($sql);
-  }
-
-  private function bindValues(PDOStatement &$statement, array $values)
-  {
-    for ($i = 1; $i <= count($values); $i++)
-      $statement->bindValue($i, $values[$i - 1]);
-  }
-
-  private function getPlaceholders(array $arr, string $connector = ", "): string
-  {
-    return implode($connector, array_map(
-      fn ($key) => "$key = ?",
-      array_keys($arr)
-    ));
-  }
-
-  public function connect(): void
+  private function connect(): void
   {
     try {
       $dotenv = \Dotenv\Dotenv::createImmutable(Application::$ROOT_DIR);
@@ -95,9 +70,25 @@ class Database
     }
   }
 
+  private function query(string $sql): PDOStatement|false
+  {
+    return $this->db->query($sql);
+  }
+
+  private function prepare(string $sql): PDOStatement|false
+  {
+    return $this->db->prepare($sql);
+  }
+
+  private function bindValues(PDOStatement &$statement, array $values)
+  {
+    for ($i = 1; $i <= count($values); $i++)
+      $statement->bindValue($i, $values[$i - 1]);
+  }
+
   public function getOne(string $tableName, array $filter)
   {
-    $whereClause = self::parseWhereClause($filter);
+    $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause["placeholders"];
     $statement = $this->prepare("SELECT * FROM $tableName WHERE $placeholders");
     $this->bindValues($statement, $whereClause["values"]);
@@ -108,7 +99,7 @@ class Database
 
   public function getAll(string $tableName, array $filter = []): array
   {
-    $whereClause = self::parseWhereClause($filter);
+    $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause["placeholders"];
     $statement = $this->prepare("SELECT * FROM $tableName WHERE $placeholders");
     $this->bindValues($statement, $whereClause["values"]);
@@ -121,6 +112,7 @@ class Database
   {
     $columns = implode(", ", array_keys($keyValuePairs));
     $placeholders = implode(", ", array_fill(0, count($keyValuePairs), "?"));
+
     $statement = $this->prepare(
       "INSERT INTO $tableName ($columns) VALUES ($placeholders)"
     );
@@ -128,12 +120,16 @@ class Database
     return $statement->execute();
   }
 
-  public function update(string $tableName, array $updates, int $id): bool
+  public function update(string $tableName, array $updates, array $filter): bool
   {
-    $columns = $this->getPlaceholders($updates);
-    $statement = $this->prepare("UPDATE $tableName SET $columns WHERE id = $id");
-    $this->bindValues($statement, array_values($updates));
+    $setClause = self::escapeQuery($updates, "=", ",");
+    $whereClause = self::escapeQuery($filter);
+    $columns = $setClause["placeholders"];
+    $wherePlaceholders = $whereClause["placeholders"];
+    $values = array_merge($setClause["values"], $whereClause["values"]);
 
+    $statement = $this->prepare("UPDATE $tableName SET $columns WHERE $wherePlaceholders");
+    $this->bindValues($statement, $values);
     return $statement->execute();
   }
 }
