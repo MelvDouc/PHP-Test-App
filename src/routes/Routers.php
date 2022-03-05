@@ -6,6 +6,7 @@ use TestApp\Core\Router;
 use TestApp\Controllers\AuthController;
 use TestApp\Controllers\CategoryController;
 use TestApp\Controllers\HomeController;
+use TestApp\Controllers\ProductController;
 use TestApp\Controllers\ProfileController;
 
 $homeRouter = new Router("/");
@@ -53,12 +54,19 @@ $authRouter
   ]);
 
 $profileRouter = new Router("/profil");
-$profileRouter->addRoute("profile-home", [
-  "path" => "/:username",
-  "methods" => [
-    "GET" => [ProfileController::class, "index"]
-  ]
-]);
+$profileRouter
+  ->addRoute("profile-home", [
+    "path" => "/:username",
+    "methods" => [
+      "GET" => [ProfileController::class, "index"]
+    ]
+  ])
+  ->addRoute("user-products", [
+    "path" => "/:username/articles",
+    "methods" => [
+      "GET" => [ProfileController::class, "products"]
+    ]
+  ]);
 
 $categoryRouter = new Router("/categories");
 $categoryRouter
@@ -74,3 +82,11 @@ $categoryRouter
       "GET" => [CategoryController::class, "single"]
     ]
   ]);
+
+$productRouter = new Router("/articles");
+$productRouter->addRoute("product", [
+  "path" => "/:slug",
+  "methods" => [
+    "GET" => [ProductController::class, "single"]
+  ]
+]);

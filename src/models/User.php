@@ -113,6 +113,11 @@ class User extends Model
     return $this;
   }
 
+  public function getProducts(): array
+  {
+    return Product::findAll(["seller_id" => $this->getId()]);
+  }
+
   public function save(): void
   {
     $this->verifString = self::generateVerifString();
@@ -140,12 +145,11 @@ class User extends Model
     $dotenv = \Dotenv\Dotenv::createImmutable(Application::$ROOT_DIR);
     $dotenv->load();
     $adminEmail = $_ENV["ADMIN_EMAIL_ADDRESS"];
-    $host = $_ENV["HOST"];
+    $link = Application::getFullRoute("activate-account", ["verifString" => $this->verifString]);
     $pug = new \Pug\Pug();
-    $htmlBody = $pug->render(Application::$ROOT_DIR . "/views/email-templates/account-activation.pug", [
+    $htmlBody = $pug->render(Application::joinPaths("views", "email-templates", "account-activation.pug"), [
       "username" => $this->getUsername(),
-      "host" => $host,
-      "verifString" => $this->getVerifString()
+      "link" => $link
     ]);
 
     try {
@@ -165,6 +169,7 @@ class User extends Model
       $email->Body = $htmlBody;
       return $email->send();
     } catch (PHPMailerException $e) {
+      error_log($e, 3, Application::joinPaths("log", "php.log"));
       return false;
     }
   }

@@ -22,7 +22,7 @@ class CategoryController extends Controller
     $categoryName = $req->getParam("category");
 
     if (!$categoryName)
-      exit("not found");
+      exit("not found (cat)");
 
     $category = Category::findOne(["name" => $categoryName]);
 

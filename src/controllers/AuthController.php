@@ -9,9 +9,6 @@ use TestApp\Models\User;
 
 class AuthController extends Controller
 {
-  public const SIGN_IN_ROUTE = "sign-in";
-  public const SIGN_UP_ROUTE = "sign-up";
-
   public static function signin_GET($req, Response $res)
   {
     self::redirectUserIfSignedIn($res);
@@ -33,12 +30,12 @@ class AuthController extends Controller
     )
       $error = "Identifiants incorrects.";
     else if (!$user->isVerified())
-      $error = "Veuillez activer votre compte afin de pouvoir vous connecter.";
+      $error = "Vous devez d'abord activer votre compte de pouvoir vous connecter.";
 
     if ($error) {
       $res->session->setErrorMessages([$error]);
       $res->session->setFormData(["email" => $email ?? ""]);
-      return $res->redirect(self::SIGN_IN_ROUTE);
+      return self::redirectToSignIn($res);
     }
 
     $res
@@ -78,7 +75,7 @@ class AuthController extends Controller
           "username" => $username ?? "",
           "email" => $email ?? ""
         ]);
-      return $res->redirect(self::SIGN_UP_ROUTE);
+      return self::redirectToSignUp($res);
     }
 
     $user = new User();
@@ -91,10 +88,10 @@ class AuthController extends Controller
       $user->save();
       $user->notify();
       $res->session->setSuccessMessage("Votre compte a bien été créé. Veuillez suivre le lien qui vous a été envoyé par mail pour l'activer.");
-      return $res->redirect(self::SIGN_IN_ROUTE);
+      return self::redirectToSignIn($res);
     } catch (\Exception $e) {
       $res->session->setErrorMessages([$e]);
-      return $res->redirect(self::SIGN_UP_ROUTE);
+      return self::redirectToSignUp($res);
     }
   }
 
@@ -122,7 +119,7 @@ class AuthController extends Controller
 
     $user->verify();
     $res->session->setSuccessMessage("Votre compte est à présent actif.");
-    $res->redirect(self::SIGN_IN_ROUTE);
+    self::redirectToSignIn($res);
   }
 
   private static function getSignUpErrors($username, $email, $password1, $password2): array
@@ -146,6 +143,16 @@ class AuthController extends Controller
       $errors[] = "Les mots de passe ne se correspondent pas.";
 
     return $errors;
+  }
+
+  private static function redirectToSignIn(Response $res)
+  {
+    $res->redirect("sign-in");
+  }
+
+  private static function redirectToSignUp(Response $res)
+  {
+    $res->redirect("sign-up");
   }
 
   private static function redirectUserIfSignedIn(Response $res)

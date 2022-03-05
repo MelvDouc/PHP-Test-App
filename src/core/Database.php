@@ -4,10 +4,46 @@ namespace TestApp\Core;
 
 use PDO;
 use PDOStatement;
-use TestApp\Models\User;
 
 class Database
 {
+  public static array $comparers = [">", ">=", "<", "<=", "LIKE"];
+  public static array $logicalOperators = ["AND", "OR"];
+
+  public static function parseWhereClause(array $filter, string $comparer = "=", string $logicalOperator = null): array
+  {
+    if (!$filter)
+      return [
+        "placeholders" => "1",
+        "values" => []
+      ];
+
+    $placeholders = [];
+    $values = [];
+
+    foreach ($filter as $key => $value) {
+      if (in_array($key, self::$comparers)) {
+        $result = self::parseWhereClause($value, $key, $logicalOperator);
+        array_push($placeholders, $result["placeholders"]);
+        array_push($values, ...$result["values"]);
+        continue;
+      }
+
+      if (in_array($key, self::$logicalOperators)) {
+        $result = self::parseWhereClause($value, $comparer, $key);
+        array_push($placeholders, $result["placeholders"]);
+        array_push($values, ...$result["values"]);
+        continue;
+      }
+
+      array_push($placeholders, "$key $comparer ?");
+      array_push($values, $value);
+    }
+
+    $placeholders = implode(($logicalOperator ? " $logicalOperator " : ""), $placeholders);
+    return compact("placeholders", "values");
+  }
+
   public \PDO $db;
 
   public function __construct()
@@ -61,11 +97,10 @@ class Database
 
   public function getOne(string $tableName, array $filter)
   {
-    $whereClause = ($filter)
-      ? $this->getPlaceholders($filter, " AND ")
-      : "1";
-    $statement = $this->prepare("SELECT * FROM $tableName WHERE $whereClause");
-    $this->bindValues($statement, array_values($filter));
+    $whereClause = self::parseWhereClause($filter);
+    $placeholders = $whereClause["placeholders"];
+    $statement = $this->prepare("SELECT * FROM $tableName WHERE $placeholders");
+    $this->bindValues($statement, $whereClause["values"]);
 
     $statement->execute();
     return $statement->fetch();
@@ -73,11 +108,10 @@ class Database
 
   public function getAll(string $tableName, array $filter = []): array
   {
-    $whereClause = ($filter)
-      ? $this->getPlaceholders($filter, " AND ")
-      : "1";
-    $statement = $this->prepare("SELECT * FROM $tableName WHERE $whereClause");
-    $this->bindValues($statement, array_values($filter));
+    $whereClause = self::parseWhereClause($filter);
+    $placeholders = $whereClause["placeholders"];
+    $statement = $this->prepare("SELECT * FROM $tableName WHERE $placeholders");
+    $this->bindValues($statement, $whereClause["values"]);
 
     $statement->execute();
     return $statement->fetchAll();

@@ -1,11 +1,9 @@
 extends /_layout.pug
 
 block vars
-  - const title = `Catégorie ${category.name}`
+  - const title = `Articles de ${username}`
 
 block main
-  p=category.description
-
   each product in products
     div
       a(href=app.route("product", {slug: product.slug}))=product.name

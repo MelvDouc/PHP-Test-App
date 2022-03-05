@@ -5,11 +5,25 @@ namespace TestApp\Core;
 class Application
 {
   public static string $ROOT_DIR;
+  public static string $HTTP_HOST;
   public static Application $instance;
 
   public static function getDb(): Database
   {
     return self::$instance->db;
+  }
+
+  public static function joinPaths(...$pathSegments): string
+  {
+    return implode("/", [self::$ROOT_DIR, ...$pathSegments]);
+  }
+
+  public static function getFullRoute(string $routeName, array $context = [])
+  {
+    return self::$HTTP_HOST . "/" . Path::addContext(
+      self::$instance->routes[$routeName]["path"],
+      $context
+    );
   }
 
   public Database $db;
@@ -18,6 +32,7 @@ class Application
   public function __construct(string $ROOT_DIR)
   {
     self::$ROOT_DIR = $ROOT_DIR;
+    self::$HTTP_HOST = getenv("HTTP_HOST");
     self::$instance = $this;
     $this->db = new Database();
   }
@@ -26,11 +41,6 @@ class Application
   {
     $this->routes = array_merge($this->routes, $router->getRoutes());
     return $this;
-  }
-
-  public function getPathByName(string $name): string
-  {
-    return $this->routes[$name]["path"];
   }
 
   /**

@@ -9,8 +9,11 @@ require_once "./src/routes/Routers.php";
 
 $app = new Application(__DIR__);
 
-$app->useRouter($homeRouter);
-$app->useRouter($authRouter);
-$app->useRouter($profileRouter);
-$app->useRouter($categoryRouter);
+$app
+  ->useRouter($homeRouter)
+  ->useRouter($authRouter)
+  ->useRouter($profileRouter)
+  ->useRouter($categoryRouter)
+  ->useRouter($productRouter);
+
 $app->run();

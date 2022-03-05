@@ -4,5 +4,11 @@ block vars
   - const title = `Profil de ${username}`
 
 block main
-  div
-    a(href=app.route("sign-out")) Déconnexion
+  if app.user && username === app.user.username
+    div
+      a(href=app.route("user-products", {username: username})) Mes articles
+    div
+      a(href=app.route("sign-out")) Déconnexion
+  else
+    div
+      a(href=app.route("user-products", {username: username})) Articles de #{username}

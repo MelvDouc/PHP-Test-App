@@ -47,7 +47,7 @@ class Path
 
   public static function addContext(string $path, array $context): string
   {
-    $path = explode("/", $path);
+    $path = self::split($path);
 
     foreach ($path as $i => $segment)
       if (str_contains($segment, ":"))

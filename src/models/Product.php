@@ -36,6 +36,7 @@ class Product extends Model
   }
 
   private string $name;
+  private string $slug;
   private string $description;
   private float $price;
   private int $quantity;
@@ -51,6 +52,17 @@ class Product extends Model
   public function setName(string $name): Product
   {
     $this->name = $name;
+    return $this;
+  }
+
+  public function getSlug(): string
+  {
+    return $this->slug;
+  }
+
+  public function setSlug(string $value): Product
+  {
+    $this->slug = $value;
     return $this;
   }
 

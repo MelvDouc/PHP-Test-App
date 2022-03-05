@@ -15,10 +15,7 @@ class Response
   {
     return [
       "route" => function ($routeName, $context = []) {
-        return Path::addContext(
-          Application::$instance->getPathByName($routeName),
-          $context
-        );
+        return Application::getFullRoute($routeName, $context);
       },
       "user" => $this->session->getUser(),
       "successMessage" => $this
@@ -44,8 +41,7 @@ class Response
 
   public function redirect(string $routeName, array $context = []): void
   {
-    $path = Application::$instance->getPathByName($routeName);
-    $path = Path::addContext($path, $context);
+    $path = Application::getFullRoute($routeName, $context);
     header("Location: $path");
   }
 

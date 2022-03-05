@@ -1,0 +1,9 @@
+extends /_layout.pug
+
+block vars
+  - const title = product.name
+
+block main
+  p=product.description
+  div
+    a(href=app.route("profile-home", {username: sellerUsername}))=sellerUsername
