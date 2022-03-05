@@ -33,11 +33,14 @@ class User extends Model
   private static function generateVerifString(): string
   {
     $length = 128;
-    return substr(
+    $verifString = substr(
       str_shuffle(str_repeat("0123456789abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", $length)),
       0,
       $length
     );
+    if ((bool) self::findOne(["verif_string" => $verifString]))
+      return self::generateVerifString();
+    return $verifString;
   }
 
   private string $username;
@@ -152,7 +155,7 @@ class User extends Model
       )
     );
     $htmlBody = $twig->render("email-templates/account-activation.twig", [
-      "username" => $this->getUsername(),
+      "username" => $this->username,
       "link" => $link
     ]);
 

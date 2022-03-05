@@ -3,7 +3,7 @@
 {% block title %}Inscription{% endblock %}
 
 {% block main %}
-  <form action="{{ route('sign-in') }}" method="POST">
+  <form action="{{ route('sign-up') }}" method="POST">
     <div>
       <label for="username">Nom d'utilisateur</label>
       <input type="text" id="username" name="username" value="{{ app.formData.username }}" required />
@@ -25,5 +25,5 @@
     </div>
   </form>
 
-  <p>Pas encore de compte ? <a href="{{ route('sign-up') }}">S'inscire</a></p>
+  <p>Déjà un compte ? <a href="{{ route('sign-in') }}">Se connecter.</a></p>
 {% endblock %}

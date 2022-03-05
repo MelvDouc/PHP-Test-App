@@ -6,8 +6,8 @@
 {% block main %}
   <form action="{{ route('sign-in') }}" method="POST">
     <div>
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" value="{{ app.formData.email }}" required />
+      <label for="username_or_email">Nom d'utilisateur ou adresse email</label>
+      <input type="text" id="username_or_email" name="username_or_email" value="{{ app.formData.username_or_email }}" required />
     </div>
     <div>
       <label for="password">Password</label>
