@@ -14,6 +14,7 @@ $app
   ->useRouter($authRouter)
   ->useRouter($profileRouter)
   ->useRouter($categoryRouter)
-  ->useRouter($productRouter);
+  ->useRouter($productRouter)
+  ->useRouter($adminRouter);
 
 $app->run();

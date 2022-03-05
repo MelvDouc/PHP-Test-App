@@ -1,0 +1,33 @@
+{% extends "__layouts/admin.layout.twig" %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block main %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom d'utilisateur</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Actif</th>
+        <th>Depuis le</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>
+            <a href="{{ route('profile-home', {username: user.username}) }}">{{ user.username }}</a>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.is_verified ? "OUI" : "NON" }}</td>
+          <td>{{ user.created_at }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

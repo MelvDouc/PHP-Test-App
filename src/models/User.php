@@ -30,6 +30,11 @@ class User extends Model
       ->setCreatedAt(new DateTime($dbRow["created_at"]));
   }
 
+  public static function findAll(array $filter = []): array
+  {
+    return Application::getDb()->getAll(self::TABLE_NAME, $filter);
+  }
+
   private static function generateVerifString(): string
   {
     $length = 128;

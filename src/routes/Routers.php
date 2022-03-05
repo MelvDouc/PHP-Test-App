@@ -2,6 +2,7 @@
 
 namespace TestApp\Routes;
 
+use TestApp\Controllers\AdminController;
 use TestApp\Core\Router;
 use TestApp\Controllers\AuthController;
 use TestApp\Controllers\CategoryController;
@@ -90,3 +91,18 @@ $productRouter->addRoute("product", [
     "GET" => [ProductController::class, "single"]
   ]
 ]);
+
+$adminRouter = new Router("/admin");
+$adminRouter
+  ->addRoute("admin-home", [
+    "path" => "/",
+    "methods" => [
+      "GET" => [AdminController::class, "home"]
+    ]
+  ])
+  ->addRoute("admin-users-list", [
+    "path" => "/utilisateurs",
+    "methods" => [
+      "GET" => [AdminController::class, "usersList"]
+    ]
+  ]);
