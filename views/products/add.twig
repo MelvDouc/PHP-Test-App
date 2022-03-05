@@ -1,0 +1,42 @@
+{% extends "__layouts/public.layout.twig" %}
+
+{% block title %}Ajouter un article{% endblock %}
+
+{% block main %}
+  <form action="{{ route('add-product') }}" method="POST" enctype="multipart/form-data">
+    <div>
+      <label for="name">Nom de l'article</label>
+      <input type="text" id="name" name="name" value="{{ app.formData.name }}" required />
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <textarea name="description" id="description">{{ app.formData.description }}</textarea>
+    </div>
+    <div>
+      <label for="price">Prix</label>
+      <input type="number" name="price" id="price" value="{{ app.formData.price }}" required />
+    </div>
+    <div>
+      <label for="quantity">Quantité</label>
+      <input type="number" name="quantity" id="quantity" value="{{ app.formData.quantity ? app.formData.quantity : 1 }}" required />
+    </div>
+    <div>
+      <label for="category_id">Catégorie</label>
+      <select name="category_id" id="category_id">
+        {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="image">Image</label>
+      <input type="file" name="image" id="image" />
+    </div>
+    <div>
+      <input type="submit" value="Ajouter" />
+    </div>
+  
+  </form>
+
+
+{% endblock %}

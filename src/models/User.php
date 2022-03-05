@@ -30,9 +30,9 @@ class User extends Model
       ->setCreatedAt(new DateTime($dbRow["created_at"]));
   }
 
-  public static function findAll(array $filter = []): array
+  public static function findAll(array $columns = ["*"], array $filter = []): array
   {
-    return Application::getDb()->getAll(self::TABLE_NAME, $filter);
+    return Application::getDb()->getAll(self::TABLE_NAME, $columns, $filter);
   }
 
   private static function generateVerifString(): string
@@ -123,7 +123,7 @@ class User extends Model
 
   public function getProducts(): array
   {
-    return Product::findAll(["seller_id" => $this->getId()]);
+    return Product::findAll(["*"], ["seller_id" => $this->getId()]);
   }
 
   public function save(): void

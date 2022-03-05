@@ -26,9 +26,9 @@ class Category extends Model
     return $instance;
   }
 
-  public static function findAll(array $filter = []): array
+  public static function findAll(array $columns = ["*"], array $filter = []): array
   {
-    return Application::getDb()->getAll(self::TABLE_NAME, $filter);
+    return Application::getDb()->getAll(self::TABLE_NAME, $columns, $filter);
   }
 
   private string $name;
@@ -70,6 +70,6 @@ class Category extends Model
 
   public function getProducts(): array
   {
-    return Product::findAll(["category_id" => $this->getId()]);
+    return Product::findAll(["*"], ["category_id" => $this->getId()]);
   }
 }

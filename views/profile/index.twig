@@ -5,6 +5,7 @@
 {% block main %}
   {% if app.user %}
     <div><a href="{{ route('user-products', { username: username }) }}">Mes articles</a></div>
+    <div><a href="{{ route('add-product') }}">Ajouter un article</a></div>
     <div><a href="{{ route('sign-out') }}">Déconnexion</a></div>
   {% else %}
     <div><a href="{{ route('user-products', { username: username }) }}">Articles de {{ username }}</a></div>

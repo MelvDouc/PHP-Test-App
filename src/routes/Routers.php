@@ -85,12 +85,20 @@ $categoryRouter
   ]);
 
 $productRouter = new Router("/articles");
-$productRouter->addRoute("product", [
-  "path" => "/:slug",
-  "methods" => [
-    "GET" => [ProductController::class, "single"]
-  ]
-]);
+$productRouter
+  ->addRoute("add-product", [
+    "path" => "/ajouter",
+    "methods" => [
+      "GET" => [ProductController::class, "add_GET"],
+      "POST" => [ProductController::class, "add_POST"]
+    ]
+  ])
+  ->addRoute("product", [
+    "path" => "/:slug",
+    "methods" => [
+      "GET" => [ProductController::class, "single"]
+    ]
+  ]);
 
 $adminRouter = new Router("/admin");
 $adminRouter

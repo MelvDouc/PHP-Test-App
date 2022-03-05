@@ -97,11 +97,12 @@ class Database
     return $statement->fetch();
   }
 
-  public function getAll(string $tableName, array $filter = []): array
+  public function getAll(string $tableName, array $columns = ["*"], array $filter = []): array
   {
     $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause["placeholders"];
-    $statement = $this->prepare("SELECT * FROM $tableName WHERE $placeholders");
+    $columns = implode(", ", $columns);
+    $statement = $this->prepare("SELECT $columns FROM $tableName WHERE $placeholders");
     $this->bindValues($statement, $whereClause["values"]);
 
     $statement->execute();

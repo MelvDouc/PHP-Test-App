@@ -15,24 +15,12 @@ class Product extends Model
     $dbRow = Application::getDb()->getOne(self::TABLE_NAME, $search);
     if (!$dbRow)
       return null;
-    $instance = new Product();
-    $instance
-      ->setId($dbRow["id"])
-      ->setName($dbRow["name"])
-      ->setDescription($dbRow["description"])
-      ->setPrice((float) $dbRow["price"])
-      ->setQuantity((int) $dbRow["quantity"])
-      ->setCategoryId((int) $dbRow["category_id"])
-      ->setSellerId((int) $dbRow["seller_id"])
-      ->setImage($dbRow["image"])
-      ->setCreatedAt(new DateTime($dbRow["created_at"]));
-
-    return $instance;
+    return new Product($dbRow);
   }
 
-  public static function findAll(array $filter = []): array
+  public static function findAll(array $columns = ["*"], array $filter = []): array
   {
-    return Application::getDb()->getAll(self::TABLE_NAME, $filter);
+    return Application::getDb()->getAll(self::TABLE_NAME, $columns, $filter);
   }
 
   private string $name;
@@ -43,6 +31,32 @@ class Product extends Model
   private int $category_id;
   private int $seller_id;
   private string $image;
+
+  public function __construct(array $product = [])
+  {
+    extract($product);
+
+    if (isset($id) && is_numeric($id))
+      $this->id = $id;
+    if (isset($name) && is_string($name))
+      $this->name = $name;
+    if (isset($slug) && is_string($slug))
+      $this->slug = $slug;
+    if (isset($description) && is_string($description))
+      $this->description = $description;
+    if (isset($price) && is_numeric($price))
+      $this->price = (int) $price;
+    if (isset($quantity) && is_numeric($quantity))
+      $this->quantity = (int) $quantity;
+    if (isset($category_id) && is_numeric($category_id))
+      $this->category_id = (int) $category_id;
+    if (isset($seller_id) && is_numeric($seller_id))
+      $this->seller_id = (int) $seller_id;
+    if (isset($image) && is_string($image))
+      $this->image = $image;
+    if (isset($created_at) && is_string($created_at))
+      $this->setCreatedAt(new DateTime($created_at));
+  }
 
   public function getName(): string
   {
@@ -60,9 +74,16 @@ class Product extends Model
     return $this->slug;
   }
 
-  public function setSlug(string $value): Product
+  private function setSlug(): Product
   {
-    $this->slug = $value;
+    $slug = preg_replace("/\s+/", "-", $this->name);
+
+    if (self::findOne(["slug" => $slug])) {
+      $timestamp = (new DateTime())->format("Y-m-d-H-i-s");
+      $slug .= "-$timestamp";
+    }
+
+    $this->slug = $slug;
     return $this;
   }
 
@@ -136,9 +157,59 @@ class Product extends Model
     return $this->image;
   }
 
-  public function setImage(string $image): Product
+  public function setImage(string $imageName): Product
   {
-    $this->image = $image;
+    $this->image = $imageName;
     return $this;
+  }
+
+  public function addImage(array $img): void
+  {
+    $pathInfo = pathinfo($img["name"]);
+    $this->image = md5($pathInfo["filename"]) . "." . $pathInfo["extension"];
+    move_uploaded_file(
+      $img["tmp_name"],
+      Application::joinPaths("static", "img", "products", $this->image)
+    );
+  }
+
+  public function getErrors(): array
+  {
+    $errors = [];
+
+    if (!isset($this->name) || $this->name === "")
+      $errors[] = "L'article doit avoir un nom.";
+    else if (strlen($this->name) < 5 || strlen($this->name) > 100)
+      $errors[] = "Le nom de l'article doit contenir entre 5 et 100 caractères.";
+    if (!isset($this->description) || $this->description === "")
+      $errors[] = "L'article doit avoir une description.";
+    if (!isset($this->price) || $this->price < 0)
+      $errors[] = "Le prix doit être un nombre positif.";
+    if (!isset($this->quantity) || $this->quantity < 1)
+      $errors[] = "La quantité doit être supérieure ou égale à 1.";
+    if (!isset($this->category_id) || !Category::findOne(["id" => $this->category_id]))
+      $errors[] = "Catégorie non trouvée.";
+
+    return $errors;
+  }
+
+  public function save()
+  {
+    if (!isset($this->slug))
+      $this->setSlug();
+
+    $insertion = Application::getDb()->insert(self::TABLE_NAME, [
+      "name" => $this->getName(),
+      "slug" => $this->slug,
+      "description" => $this->description,
+      "price" => $this->price,
+      "quantity" => $this->quantity,
+      "category_id" => $this->category_id,
+      "seller_id" => $this->seller_id,
+      "image" => $this->image
+    ]);
+
+    if (!$insertion)
+      throw new \Exception("Product could not be saved");
   }
 }

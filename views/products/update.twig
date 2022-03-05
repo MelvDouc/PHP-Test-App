@@ -1,0 +1,19 @@
+{% extends "__layouts/public.layout.twig" %}
+
+{% block title %}Modifier {{ product.name }}{% endblock %}
+
+{% block main %}
+  <form action="{{ route('update-product', {id: product.id}) }}" method="POST">
+    <div>
+      <label for="name">Nom de l'article</label>
+      <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <input type="text" id="name" name="name" required />
+    </div>
+  
+  </form>
+
+
+{% endblock %}
