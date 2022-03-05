@@ -146,8 +146,12 @@ class User extends Model
     $dotenv->load();
     $adminEmail = $_ENV["ADMIN_EMAIL_ADDRESS"];
     $link = Application::getFullRoute("activate-account", ["verifString" => $this->verifString]);
-    $pug = new \Pug\Pug();
-    $htmlBody = $pug->render(Application::joinPaths("views", "email-templates", "account-activation.pug"), [
+    $twig = new \Twig\Environment(
+      new \Twig\Loader\FilesystemLoader(
+        Application::joinPaths("views")
+      )
+    );
+    $htmlBody = $twig->render("email-templates/account-activation.twig", [
       "username" => $this->getUsername(),
       "link" => $link
     ]);

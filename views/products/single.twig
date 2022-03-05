@@ -1,0 +1,9 @@
+{% extends "_layout.twig" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block main %}
+  <p>{{ product.description }}</p>
+
+  <div><a href="{{ route('profile-home', { username: sellerUsername }) }}">{{ sellerUsername }}</a></div>
+{% endblock %}

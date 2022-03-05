@@ -20,7 +20,7 @@ class Application
 
   public static function getFullRoute(string $routeName, array $context = [])
   {
-    return self::$HTTP_HOST . "/" . Path::addContext(
+    return "http://localhost:5000/" . Path::addContext(
       self::$instance->routes[$routeName]["path"],
       $context
     );

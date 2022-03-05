@@ -1,0 +1,11 @@
+{% extends "_layout.twig" %}
+
+{% block title %}Catégorie {{ category.name }}{% endblock %}
+
+{% block main %}
+  <p>{{ category.description }}</p>
+
+  {% for product in products %}
+    <div><a href="{{ route('product', {slug: product.slug}) }}">{{ product.name }}</a></div>
+  {% endfor %}
+{% endblock %}

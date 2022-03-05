@@ -1,3 +1,5 @@
 .env
-/vendor
+/.vscode
+/compilation-cache
 /log
+/vendor

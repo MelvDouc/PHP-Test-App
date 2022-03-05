@@ -1,0 +1,22 @@
+{% extends "_layout.twig" %}
+
+{% block title %}Connexion{% endblock %}
+
+
+{% block main %}
+  <form action="{{ route('sign-in') }}" method="POST">
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ app.formData.email }}" required />
+    </div>
+    <div>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" value="{{ app.formData.password }}" required />
+    </div>
+    <div>
+      <button type="submit">Connexion</button>
+    </div>
+  </form>
+
+  <p>Pas encore de compte ? <a href="{{ route('sign-up') }}">S'inscire</a></p>
+{% endblock %}

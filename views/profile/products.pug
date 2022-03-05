@@ -1,9 +1,0 @@
-extends /_layout.pug
-
-block vars
-  - const title = `Articles de ${username}`
-
-block main
-  each product in products
-    div
-      a(href=app.route("product", {slug: product.slug}))=product.name

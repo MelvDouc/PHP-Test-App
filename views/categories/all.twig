@@ -1,0 +1,13 @@
+{% extends "_layout.twig" %}
+
+{% block title %}Catégories{% endblock %}
+
+{% block main %}
+  {% if categories %}
+    {% for category in categories %}
+      <div>
+        <a href="{{ route('category', {category: category.name}) }}">{{ category.name }}</a>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endblock %}

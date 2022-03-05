@@ -1,0 +1,13 @@
+{% extends "_layout.twig" %}
+
+{% block title %}Articles de {{ username }}{% endblock %}
+
+{% block main %}
+  
+  {% for product in products %}
+    <div>
+      <a href="{{ route('product', { slug: product.slug }) }}">{{ product.name }}</a>
+    </div>
+  {% endfor %}
+
+{% endblock %}
