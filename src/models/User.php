@@ -2,50 +2,23 @@
 
 namespace TestApp\Models;
 
-use DateTime;
 use TestApp\Core\Model;
 use TestApp\Core\Application;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use StringUtils;
 
 class User extends Model
 {
   public const TABLE_NAME = "user";
 
-  public static function findOne(array $search): User|null
-  {
-    $dbRow = Application::getDb()->getOne(self::TABLE_NAME, $search);
-    if (!$dbRow)
-      return null;
-    $user = new User();
-    return $user
-      ->setId((int) $dbRow["id"])
-      ->setUsername($dbRow["username"])
-      ->setEmail($dbRow["email"])
-      ->setPassword($dbRow["password"])
-      ->setRole($dbRow["role"])
-      ->setVerified($dbRow["is_verified"])
-      ->setVerifString($dbRow["verif_string"])
-      ->setCreatedAt(new DateTime($dbRow["created_at"]));
-  }
-
-  public static function findAll(array $columns = ["*"], array $filter = []): array
-  {
-    return Application::getDb()->getAll(self::TABLE_NAME, $columns, $filter);
-  }
-
   private static function generateVerifString(): string
   {
-    $length = 128;
-    $verifString = substr(
-      str_shuffle(str_repeat("0123456789abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", $length)),
-      0,
-      $length
-    );
-    if ((bool) self::findOne(["verif_string" => $verifString]))
+    $verif_string = StringUtils::getRandomString(128);
+    if ((bool) static::findOne(["verif_string" => $verif_string]))
       return self::generateVerifString();
-    return $verifString;
+    return $verif_string;
   }
 
   private string $username;
@@ -53,7 +26,7 @@ class User extends Model
   private string $password;
   private int $role = 1;
   private bool $is_verified = false;
-  private ?string $verifString = null;
+  private ?string $verif_string = null;
 
   public function getUsername(): string
   {
@@ -112,28 +85,28 @@ class User extends Model
 
   public function getVerifString(): string
   {
-    return $this->verifString;
+    return $this->verif_string;
   }
 
   public function setVerifString(string|null $value): User
   {
-    $this->verifString = $value;
+    $this->verif_string = $value;
     return $this;
   }
 
   public function getProducts(): array
   {
-    return Product::findAll(["*"], ["seller_id" => $this->getId()]);
+    return Product::findAll(["*"], ["seller_id" => $this->id]);
   }
 
   public function save(): void
   {
-    $this->verifString = self::generateVerifString();
+    $this->verif_string = self::generateVerifString();
     $insertion = Application::getDb()->insert(self::TABLE_NAME, [
       "username" => $this->username,
       "email" => $this->email,
       "password" => $this->password,
-      "verif_string" => $this->verifString
+      "verif_string" => $this->verif_string
     ]);
     if (!$insertion)
       throw new \Exception("User couldn't be saved.");
@@ -147,17 +120,17 @@ class User extends Model
         "verif_string" => null,
         "is_verified" => 1
       ],
-      ["id" => $this->getId()]
+      ["id" => $this->id]
     );
   }
 
   public function notify(): bool
   {
     $email = new PHPMailer(true);
-    $dotenv = \Dotenv\Dotenv::createImmutable(Application::$ROOT_DIR);
-    $dotenv->load();
     $adminEmail = $_ENV["ADMIN_EMAIL_ADDRESS"];
-    $link = Application::getFullRoute("activate-account", ["verifString" => $this->verifString]);
+    $link = Application::getFullRoute("activate-account", [
+      "verifString" => $this->verif_string
+    ]);
     $twig = new \Twig\Environment(
       new \Twig\Loader\FilesystemLoader(
         Application::joinPaths("views")

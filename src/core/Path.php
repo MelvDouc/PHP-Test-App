@@ -34,15 +34,15 @@ class Path
 
   public static function getParamsMap(string $dynamicPath, string $staticPath): array
   {
-    $res = [];
+    $map = [];
     $dynamicPath = self::split($dynamicPath);
     $staticPath = self::split($staticPath);
 
     foreach ($dynamicPath as $i => $segment)
       if (str_contains($segment, ":"))
-        $res[substr($segment, 1)] = $staticPath[$i];
+        $map[substr($segment, 1)] = $staticPath[$i];
 
-    return $res;
+    return $map;
   }
 
   public static function addContext(string $path, array $context): string

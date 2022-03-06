@@ -15,7 +15,8 @@ class AdminController
 
   public static function usersList(Request $req, Response $res)
   {
-    $users = User::findAll();
-    return $res->render("admin/users-list", compact("users"));
+    return $res->render("admin/users-list", [
+      "users" => User::findAll()
+    ]);
   }
 }

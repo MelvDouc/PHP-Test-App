@@ -10,19 +10,6 @@ class Product extends Model
 {
   public const TABLE_NAME = "product";
 
-  public static function findOne(array $search)
-  {
-    $dbRow = Application::getDb()->getOne(self::TABLE_NAME, $search);
-    if (!$dbRow)
-      return null;
-    return new Product($dbRow);
-  }
-
-  public static function findAll(array $columns = ["*"], array $filter = []): array
-  {
-    return Application::getDb()->getAll(self::TABLE_NAME, $columns, $filter);
-  }
-
   private string $name;
   private string $slug;
   private string $description;
@@ -31,32 +18,6 @@ class Product extends Model
   private int $category_id;
   private int $seller_id;
   private string $image;
-
-  public function __construct(array $product = [])
-  {
-    extract($product);
-
-    if (isset($id) && is_numeric($id))
-      $this->id = $id;
-    if (isset($name) && is_string($name))
-      $this->name = $name;
-    if (isset($slug) && is_string($slug))
-      $this->slug = $slug;
-    if (isset($description) && is_string($description))
-      $this->description = $description;
-    if (isset($price) && is_numeric($price))
-      $this->price = (int) $price;
-    if (isset($quantity) && is_numeric($quantity))
-      $this->quantity = (int) $quantity;
-    if (isset($category_id) && is_numeric($category_id))
-      $this->category_id = (int) $category_id;
-    if (isset($seller_id) && is_numeric($seller_id))
-      $this->seller_id = (int) $seller_id;
-    if (isset($image) && is_string($image))
-      $this->image = $image;
-    if (isset($created_at) && is_string($created_at))
-      $this->setCreatedAt(new DateTime($created_at));
-  }
 
   public function getName(): string
   {
@@ -199,7 +160,7 @@ class Product extends Model
       $this->setSlug();
 
     $insertion = Application::getDb()->insert(self::TABLE_NAME, [
-      "name" => $this->getName(),
+      "name" => $this->name,
       "slug" => $this->slug,
       "description" => $this->description,
       "price" => $this->price,
@@ -210,6 +171,6 @@ class Product extends Model
     ]);
 
     if (!$insertion)
-      throw new \Exception("Product could not be saved");
+      throw new \Exception("Product could not be saved.");
   }
 }

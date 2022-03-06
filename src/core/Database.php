@@ -53,8 +53,6 @@ class Database
   private function connect(): void
   {
     try {
-      $dotenv = \Dotenv\Dotenv::createImmutable(Application::$ROOT_DIR);
-      $dotenv->load();
       $host = $_ENV["DB_HOST"];
       $dbName = $_ENV["DB_NAME"];
 
