@@ -8,9 +8,9 @@ class Category extends Model
 {
   public const TABLE_NAME = "category";
 
-  private string $name;
-  private string $description;
-  private string $image = "default.jpg";
+  protected string $name;
+  protected string $description;
+  protected string $image = "default.jpg";
 
   public function getName(): string
   {

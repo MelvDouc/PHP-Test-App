@@ -2,5 +2,6 @@
 /.vscode
 /compilation-cache
 /log
-/static/img
+/static/compilation-cache
+/static/img/products/
 /vendor

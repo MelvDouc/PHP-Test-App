@@ -21,12 +21,12 @@ class User extends Model
     return $verif_string;
   }
 
-  private string $username;
-  private string $email;
-  private string $password;
-  private int $role = 1;
-  private bool $is_verified = false;
-  private ?string $verif_string = null;
+  protected string $username;
+  protected string $email;
+  protected string $password;
+  protected int $role = 1;
+  protected bool $is_verified = false;
+  protected ?string $verif_string = null;
 
   public function getUsername(): string
   {
@@ -132,9 +132,7 @@ class User extends Model
       "verif_string" => $this->verif_string
     ]);
     $twig = new \Twig\Environment(
-      new \Twig\Loader\FilesystemLoader(
-        Application::joinPaths("views")
-      )
+      new \Twig\Loader\FilesystemLoader(Application::joinPaths("views"))
     );
     $htmlBody = $twig->render("email-templates/account-activation.twig", [
       "username" => $this->username,
@@ -158,7 +156,7 @@ class User extends Model
       $email->Body = $htmlBody;
       return $email->send();
     } catch (PHPMailerException $e) {
-      error_log($e, 3, Application::joinPaths("log", "php.log"));
+      error_log($e, 3, Application::joinPaths("data", "log", "php.log"));
       return false;
     }
   }

@@ -11,7 +11,10 @@ class Model
 
   public static function findOne(array $filter)
   {
-    return Application::getDb()->getOne(static::TABLE_NAME, $filter);
+    $dbRow = Application::getDb()->getOne(static::TABLE_NAME, $filter);
+    if (!$dbRow)
+      return null;
+    return new static($dbRow);
   }
 
   public static function findAll(array $columns = ["*"], array $filter = []): array
@@ -31,7 +34,7 @@ class Model
         continue;
 
       if ($key === "created_at") {
-        $this->created_at = new DateTime($value);
+        $this->setCreatedAt($value);
         continue;
       }
 

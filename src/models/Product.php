@@ -10,14 +10,14 @@ class Product extends Model
 {
   public const TABLE_NAME = "product";
 
-  private string $name;
-  private string $slug;
-  private string $description;
-  private float $price;
-  private int $quantity;
-  private int $category_id;
-  private int $seller_id;
-  private string $image;
+  protected string $name;
+  protected string $slug;
+  protected string $description;
+  protected float $price;
+  protected int $quantity;
+  protected int $category_id;
+  protected int $seller_id;
+  protected string $image;
 
   public function getName(): string
   {

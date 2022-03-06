@@ -4,6 +4,9 @@
 
 {% block main %}
   {% if app.user %}
+    {% if app.user.role == 0 %}
+      <div><a href="{{ route('admin-home') }}">Espace Admin</a></div>
+    {% endif %}
     <div><a href="{{ route('user-products', { username: username }) }}">Mes articles</a></div>
     <div><a href="{{ route('add-product') }}">Ajouter un article</a></div>
     <div><a href="{{ route('sign-out') }}">Déconnexion</a></div>

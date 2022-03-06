@@ -2,6 +2,8 @@
 
 namespace TestApp\Core;
 
+use Exception;
+
 class Application
 {
   public static string $ROOT_DIR;
@@ -29,6 +31,9 @@ class Application
    */
   public static function getFullRoute(string $routeName, array $context = [])
   {
+    if (!array_key_exists($routeName, self::$instance->routes))
+      throw new Exception("Invalid route name.");
+
     return "http://localhost:5000/" . Path::addContext(
       self::$instance->routes[$routeName]["path"],
       $context
