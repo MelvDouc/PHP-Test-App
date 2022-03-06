@@ -44,7 +44,7 @@ class AuthController extends Controller
     if ($error) {
       $res->session->setErrorMessages([$error]);
       $res->session->setFormData(["username_or_email" => $usernameOrEmail ?? ""]);
-      return self::redirectToSignIn($res);
+      return $res->redirect("sign-in");
     }
 
     $res
@@ -84,7 +84,7 @@ class AuthController extends Controller
           "username" => $username ?? "",
           "email" => $email ?? ""
         ]);
-      return self::redirectToSignUp($res);
+      return $res->redirect("sign-up");
     }
 
     $user = new User();
@@ -97,10 +97,10 @@ class AuthController extends Controller
       $user->save();
       $user->notify();
       $res->session->setSuccessMessage("Votre compte a bien été créé. Veuillez suivre le lien qui vous a été envoyé par mail pour l'activer.");
-      return self::redirectToSignIn($res);
+      return $res->redirect("sign-in");
     } catch (\Exception $e) {
       $res->session->setErrorMessages([$e]);
-      return self::redirectToSignUp($res);
+      $res->redirect("sign-up");
     }
   }
 
@@ -129,7 +129,7 @@ class AuthController extends Controller
 
     $user->verify();
     $res->session->setSuccessMessage("Votre compte est à présent actif. Il ne vous reste plus qu'à vous connecter.");
-    self::redirectToSignIn($res);
+    $res->redirect("sign-in");
   }
 
   private static function getSignUpErrors($username, $email, $password1, $password2): array
@@ -153,16 +153,6 @@ class AuthController extends Controller
       $errors[] = "Les mots de passe ne se correspondent pas.";
 
     return $errors;
-  }
-
-  private static function redirectToSignIn(Response $res)
-  {
-    $res->redirect("sign-in");
-  }
-
-  private static function redirectToSignUp(Response $res)
-  {
-    $res->redirect("sign-up");
   }
 
   private static function redirectUserIfSignedIn(Response $res)
