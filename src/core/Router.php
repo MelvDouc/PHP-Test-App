@@ -34,13 +34,4 @@ class Router
     ];
     return $this;
   }
-
-  public function setRoutes(array $routes): Router
-  {
-    $this->routes = array_map(function ($item) {
-      $item['path'] = $this->prefix($item['path']);
-      return $item;
-    }, $routes);
-    return $this;
-  }
 }
