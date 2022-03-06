@@ -44,11 +44,6 @@ class Response
     header("Location: $path");
   }
 
-  public function redirectToRoute(string $route): void
-  {
-    header("Location: $route");
-  }
-
   public function redirectNotFound(): void
   {
     http_response_code(404);
