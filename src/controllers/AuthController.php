@@ -117,12 +117,12 @@ class AuthController extends Controller
   public static function activateAccount(Request $req, Response $res)
   {
     self::redirectUserIfSignedIn($res);
-    $verifString = $req->getParam("verifString");
+    $verif_string = $req->getParam("verif_string");
 
-    if (!$verifString)
+    if (!$verif_string)
       return $res->redirect("home");
 
-    $user = User::findOne(["verif_string" => $verifString]);
+    $user = User::findOne(["verif_string" => $verif_string]);
 
     if (!$user || $user->isVerified())
       return $res->redirect("home");

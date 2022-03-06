@@ -129,7 +129,7 @@ class User extends Model
     $email = new PHPMailer(true);
     $adminEmail = $_ENV["ADMIN_EMAIL_ADDRESS"];
     $link = Application::getFullRoute("activate-account", [
-      "verifString" => $this->verif_string
+      "verif_string" => $this->verif_string
     ]);
     $twig = new \Twig\Environment(
       new \Twig\Loader\FilesystemLoader(

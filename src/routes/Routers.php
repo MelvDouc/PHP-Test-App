@@ -48,7 +48,7 @@ $authRouter
     ]
   ])
   ->addRoute("activate-account", [
-    "path" => "/activation-compte/:verifString",
+    "path" => "/activation-compte/:verif_string",
     "methods" => [
       "GET" => [AuthController::class, "activateAccount"]
     ]
