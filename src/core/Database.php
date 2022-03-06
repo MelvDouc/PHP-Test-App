@@ -11,6 +11,11 @@ class Database
   private const VALUES_KEY = "values";
   private static array $comparers = [">", ">=", "<", "<=", "LIKE"];
 
+  private static function commaJoin(array $arr): string
+  {
+    return implode(", ", $arr);
+  }
+
   private static function escapeQuery(array $filter, string $comparer = "=", string $logicalOperator = null): array
   {
     if (!$filter)
@@ -102,7 +107,7 @@ class Database
   {
     $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause[self::PLACEHOLDERS_KEY];
-    $columns = implode(", ", $columns);
+    $columns = self::commaJoin($columns);
     $statement = $this->prepare("SELECT $columns FROM $tableName WHERE $placeholders");
     self::bindValues($statement, $whereClause[self::VALUES_KEY]);
 
@@ -110,10 +115,33 @@ class Database
     return $statement->fetchAll();
   }
 
+  public function join(array $tablesAndColumns, string $mainTable, array $joins): array
+  {
+    $columns = [];
+
+    foreach ($tablesAndColumns as $tableName => $colArray)
+      foreach ($colArray as $columnName)
+        $columns[] = $tableName . "." . $columnName;
+
+    $columns = self::commaJoin($columns);
+
+    foreach ($joins as $tableName => $association) {
+      $primaryKey = array_keys($association)[0];
+      $foreignKey = array_values($association)[0];
+      $joins[$tableName] = "JOIN $tableName ON $tableName.$primaryKey = $mainTable.$foreignKey";
+    }
+
+    $joins = implode(" ", $joins);
+
+    return $this
+      ->query("SELECT $columns FROM $mainTable $joins")
+      ->fetchAll();
+  }
+
   public function insert(string $tableName, array $keyValuePairs): bool
   {
-    $columns = implode(", ", array_keys($keyValuePairs));
-    $placeholders = implode(", ", array_fill(0, count($keyValuePairs), "?"));
+    $columns = self::commaJoin(array_keys($keyValuePairs));
+    $placeholders = self::commaJoin(array_fill(0, count($keyValuePairs), "?"));
 
     $statement = $this->prepare(
       "INSERT INTO $tableName ($columns) VALUES ($placeholders)"

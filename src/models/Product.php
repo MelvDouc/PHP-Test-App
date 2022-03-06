@@ -17,7 +17,6 @@ class Product extends Model
   protected int $quantity;
   protected int $category_id;
   protected int $seller_id;
-  protected string $image = "default.jpg";
 
   public function getName(): string
   {

@@ -35,10 +35,8 @@ class ProductController
       return $res->redirect("sign-in");
     }
 
-    $categories = Category::findAll(["id", "name"]);
-
     $res->render("products/add", [
-      "categories" => $categories
+      "categories" => Category::findAll(["id", "name"])
     ]);
   }
 
@@ -48,8 +46,7 @@ class ProductController
     $product = new Product($req->getBody());
     $image = $_FILES["image"] ?? null;
 
-    $imageErrors = ImageValidator::check($image);
-    $errors = array_merge($product->getErrors(), $imageErrors);
+    $errors = array_merge($product->getErrors(), ImageValidator::check($image));
 
     if ($errors) {
       $res->session->setErrorMessages($errors);
@@ -57,7 +54,8 @@ class ProductController
         "name" => $product->getName(),
         "description" => $product->getDescription(),
         "price" => $product->getPrice(),
-        "quantity" => $product->getQuantity()
+        "quantity" => $product->getQuantity(),
+        "category_id" => $product->getCategoryId()
       ]);
       return $res->redirect("add-product");
     }

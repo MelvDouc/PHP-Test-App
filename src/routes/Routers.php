@@ -113,4 +113,10 @@ $adminRouter
     "methods" => [
       "GET" => [AdminController::class, "usersList"]
     ]
+  ])
+  ->addRoute("admin-products-list", [
+    "path" => "/articles",
+    "methods" => [
+      "GET" => [AdminController::class, "productsList"]
+    ]
   ]);

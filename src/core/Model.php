@@ -17,9 +17,15 @@ class Model
     return new static($dbRow);
   }
 
-  public static function findAll(array $columns = ["*"], array $filter = []): array
+  public static function findAll(array $columns = ["*"], array $filter = [], string $orderBy = "id"): array
   {
-    return Application::getDb()->getAll(static::TABLE_NAME, $columns, $filter);
+    return Application::getDb()->getAll(static::TABLE_NAME, $columns, $filter, $orderBy);
+  }
+
+  public static function findAllJoin(array $tablesAndColumns, array $joins): array
+  {
+    $tablesAndColumns[static::TABLE_NAME] = ["*"];
+    return Application::getDb()->join($tablesAndColumns, static::TABLE_NAME, $joins);
   }
 
   protected int $id;

@@ -13,10 +13,10 @@ class ImageValidator
 
     if (
       !is_array($image)
-      || !isset($image["errors"])
+      || !isset($image["error"])
       || !isset($image["type"])
       || !isset($image["size"])
-      || $image["errors"] !== 0
+      || $image["error"] !== 0
     ) {
       $errors[] = "Fichier d'image manquant ou invalide.";
       return $errors;

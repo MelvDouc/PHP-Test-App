@@ -1,0 +1,45 @@
+{% extends "__layouts/admin.layout.twig" %}
+
+{% block title %}Liste des articles{% endblock %}
+
+{% block main %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Prix</th>
+        <th>Quantité</th>
+        <th>Catégorie</th>
+        <th>Vendeur</th>
+        <th>Ajouté le</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        <tr>
+          <td>{{ product.id }}</td>
+          <td>
+            <a href="{{ route('product', {slug: product.slug}) }}">{{ product.name }}</a>
+          </td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.quantity }}</td>
+          <td>
+            <a href="{{ route('category', {category: product.category}) }}">{{ product.category }}</a>
+          </td>
+          <td>
+            <a href="{{ route('profile-home', {username: product.seller}) }}">{{ product.seller }}</a>
+          </td>
+          <td>{{ product.created_at }}</td>
+          <td>
+            <a href="{{ route('update-product', {slug: product.slug}) }}">Modifier</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}
