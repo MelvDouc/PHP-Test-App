@@ -1,7 +1,7 @@
 .env
 /.vscode
 /compilation-cache
-/log
+/data/log
 /static/compilation-cache
 /static/img/products/
 /vendor
