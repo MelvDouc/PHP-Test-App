@@ -4,10 +4,10 @@ namespace TestApp\Models;
 
 use TestApp\Core\Model;
 use TestApp\Core\Application;
+use TestApp\Utils\StringUtils;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
-use StringUtils;
 
 class User extends Model
 {

@@ -10,7 +10,6 @@ class Category extends Model
 
   protected string $name;
   protected string $description;
-  protected string $image = "default.jpg";
 
   public function getName(): string
   {
@@ -31,17 +30,6 @@ class Category extends Model
   public function setDescription(string $value): Category
   {
     $this->description = $value;
-    return $this;
-  }
-
-  public function getImage(): string
-  {
-    return $this->image;
-  }
-
-  public function setImage(string $value): Category
-  {
-    $this->image = $value;
     return $this;
   }
 

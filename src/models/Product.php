@@ -17,7 +17,7 @@ class Product extends Model
   protected int $quantity;
   protected int $category_id;
   protected int $seller_id;
-  protected string $image;
+  protected string $image = "default.jpg";
 
   public function getName(): string
   {
@@ -111,27 +111,6 @@ class Product extends Model
   public function getSeller(): User
   {
     return User::findOne(["id" => $this->seller_id]);
-  }
-
-  public function getImage(): string
-  {
-    return $this->image;
-  }
-
-  public function setImage(string $imageName): Product
-  {
-    $this->image = $imageName;
-    return $this;
-  }
-
-  public function addImage(array $img): void
-  {
-    $pathInfo = pathinfo($img["name"]);
-    $this->image = md5($pathInfo["filename"]) . "." . $pathInfo["extension"];
-    move_uploaded_file(
-      $img["tmp_name"],
-      Application::joinPaths("static", "img", "products", $this->image)
-    );
   }
 
   public function getErrors(): array

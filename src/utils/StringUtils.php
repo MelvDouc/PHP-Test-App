@@ -1,5 +1,7 @@
 <?php
 
+namespace TestApp\Utils;
+
 class StringUtils
 {
   private const CHARS = "0123456789abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
@@ -9,7 +11,8 @@ class StringUtils
     $str = "";
 
     while (strlen($str) < $length)
-      $str .= self::CHARS[random_int(0, 62)];
+      // strlen(self::CHARS) === 62
+      $str .= self::CHARS[random_int(0, 61)];
 
     return $str;
   }

@@ -6,6 +6,7 @@ use TestApp\Core\Request;
 use TestApp\Core\Response;
 use TestApp\Models\Category;
 use TestApp\Models\Product;
+use TestApp\Utils\ImageValidator;
 
 class ProductController
 {
@@ -14,12 +15,12 @@ class ProductController
     $slug = $req->getParam("slug");
 
     if (!$slug)
-      exit("Not found.");
+      return $res->redirectNotFound();
 
     $product = Product::findOne(["slug" => $slug]);
 
     if (!$product)
-      exit("Not found (2).");
+      return $res->redirectNotFound();
 
     $sellerUsername = $product->getSeller()->getUsername();
     $res->render("products/single", compact("product", "sellerUsername"));
@@ -44,21 +45,10 @@ class ProductController
   public static function add_POST(Request $req, Response $res)
   {
 
-    $body = $req->getBody();
     $product = new Product($req->getBody());
     $image = $_FILES["image"] ?? null;
 
-    $imageErrors = [];
-
-    if (!$image || $image["error"] !== 0) {
-      $imageErrors[] = "Fichier d'image manquant ou invalide.";
-    } else {
-      if ($image["size"] > 2e6)
-        $imageErrors[] = "Le fichier ne doit pas dépasser 2 MO.";
-      if (!in_array($image["type"], ["image/jpg", "image/jpeg", "image/png", "image/gif"]))
-        $imageErrors[] = "Le fichier doit être une image.";
-    }
-
+    $imageErrors = ImageValidator::check($image);
     $errors = array_merge($product->getErrors(), $imageErrors);
 
     if ($errors) {

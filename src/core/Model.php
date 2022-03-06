@@ -23,6 +23,7 @@ class Model
   }
 
   protected int $id;
+  protected string $image = "default.jpg";
   protected DateTime $created_at;
 
   public function __construct(array $arr = [])
@@ -82,5 +83,26 @@ class Model
   {
     $this->created_at = new DateTime($dateString);
     return $this;
+  }
+
+  public function getImage(): string
+  {
+    return $this->image;
+  }
+
+  public function setImage(string $value)
+  {
+    $this->image = $value;
+    return $this;
+  }
+
+  public function addImage(array $img): void
+  {
+    $pathInfo = pathinfo($img["name"]);
+    $this->image = md5($pathInfo["filename"]) . "." . $pathInfo["extension"];
+    move_uploaded_file(
+      $img["tmp_name"],
+      Application::joinPaths("static", "img", "products", $this->image)
+    );
   }
 }

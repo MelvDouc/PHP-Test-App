@@ -18,8 +18,8 @@ class AuthController extends Controller
   public static function signIn_POST(Request $req, Response $res)
   {
     $body = $req->getBody();
-    $usernameOrEmail = $body["username_or_email"];
-    $password = $body["password"];
+    $usernameOrEmail = $body["username_or_email"] ?? null;
+    $password = $body["password"] ?? null;
 
     $error = null;
     if (!$usernameOrEmail || !$password)
@@ -43,7 +43,7 @@ class AuthController extends Controller
 
     if ($error) {
       $res->session->setErrorMessages([$error]);
-      $res->session->setFormData(["username_or_email" => $usernameOrEmail ?? ""]);
+      $res->session->setFormData(["username_or_email" => $usernameOrEmail]);
       return $res->redirect("sign-in");
     }
 
@@ -54,6 +54,7 @@ class AuthController extends Controller
         "id" => $user->getId(),
         "username" => $user->getUsername(),
         "email" => $user->getEmail(),
+        "role" => $user->getRole(),
         "created_at" => $user->getCreatedAt()
       ]);
     $res->redirect("profile-home", [
@@ -70,10 +71,10 @@ class AuthController extends Controller
   public static function signUp_POST(Request $req, Response $res)
   {
     $body = $req->getBody();
-    $username = $body["username"];
-    $email = $body["email"];
-    $password1 = $body["password1"];
-    $password2 = $body["password2"];
+    $username = $body["username"] ?? null;
+    $email = $body["email"] ?? null;
+    $password1 = $body["password1"] ?? null;
+    $password2 = $body["password2"] ?? null;
     $errors = self::getSignUpErrors($username, $email, $password1, $password2);
 
     if ($errors) {
@@ -81,8 +82,8 @@ class AuthController extends Controller
         ->session
         ->setErrorMessages($errors)
         ->setFormData([
-          "username" => $username ?? "",
-          "email" => $email ?? ""
+          "username" => $username,
+          "email" => $email
         ]);
       return $res->redirect("sign-up");
     }
@@ -134,21 +135,25 @@ class AuthController extends Controller
 
   private static function getSignUpErrors($username, $email, $password1, $password2): array
   {
-    if (!$username || !$email || !$password1 || !$password2)
+    if (
+      !is_string($username)
+      || !is_string($email)
+      || !is_string($password1)
+      || !is_string($password2)
+    )
       return ["Veuillez remplir tous les champs."];
 
     $errors = [];
-    $usernameExists = (bool) User::findOne(["username" => $username]);
-    $emailExists = (bool) User::findOne(["email" => $email]);
 
-    if ($usernameExists)
+    if ((bool) User::findOne(["username" => $username]))
       $errors[] = "Nom d'utilisateur indisponible.";
-    if ($emailExists)
+    if ((bool) User::findOne(["email" => $email]))
       $errors[] = "Un compte à cette adresse email existe déjà.";
     if (strlen($username) < 5 || strlen($username) > 50)
       $errors[] = "Veuillez choisir un nom d'utilisateur entre 5 et 50 caractères.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL))
       $errors[] = "Veuillez saisir une adresse email valide.";
+    // TODO: check password strength
     if ($password1 !== $password2)
       $errors[] = "Les mots de passe ne se correspondent pas.";
 

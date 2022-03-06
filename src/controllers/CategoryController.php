@@ -11,9 +11,8 @@ class CategoryController extends Controller
 {
   public static function all(Request $req, Response $res)
   {
-    $categories = Category::findAll();
     $res->render("categories/all", [
-      "categories" => $categories
+      "categories" =>  Category::findAll()
     ]);
   }
 
@@ -22,17 +21,16 @@ class CategoryController extends Controller
     $categoryName = $req->getParam("category");
 
     if (!$categoryName)
-      exit("not found (cat)");
+      return $res->redirectNotFound();
 
     $category = Category::findOne(["name" => $categoryName]);
 
     if (!$category)
-      exit("not found (2)");
+      return $res->redirectNotFound();
 
-    $products = $category->getProducts();
     $res->render("categories/single", [
       "category" => $category,
-      "products" => $products
+      "products" => $category->getProducts()
     ]);
   }
 }
