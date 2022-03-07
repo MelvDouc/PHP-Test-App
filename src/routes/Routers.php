@@ -93,10 +93,23 @@ $productRouter
       "POST" => [ProductController::class, "add_POST"]
     ]
   ])
+  ->addRoute("update-product", [
+    "path" => "/modifier/:slug",
+    "methods" => [
+      "GET" => [
+        [ProductController::class, "setProduct"],
+        [ProductController::class, "update_GET"]
+      ],
+      "POST" => [ProductController::class, "update_POST"]
+    ]
+  ])
   ->addRoute("product", [
     "path" => "/:slug",
     "methods" => [
-      "GET" => [ProductController::class, "single"]
+      "GET" => [
+        [ProductController::class, "setProduct"],
+        [ProductController::class, "single"]
+      ]
     ]
   ]);
 

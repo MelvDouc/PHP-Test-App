@@ -1,16 +1,41 @@
 {% extends "__layouts/public.layout.twig" %}
 
-{% block title %}Modifier {{ product.name }}{% endblock %}
+{% block title %}Modifier un article{% endblock %}
 
 {% block main %}
-  <form action="{{ route('update-product', {id: product.id}) }}" method="POST">
+  <form action="{{ route('update-product', {slug: product.slug}) }}" method="POST" enctype="multipart/form-data">
     <div>
       <label for="name">Nom de l'article</label>
-      <input type="text" id="name" name="name" required />
+      <input type="text" id="name" name="name" value="{{ product.name }}" required />
     </div>
     <div>
       <label for="description">Description</label>
-      <input type="text" id="name" name="name" required />
+      <textarea name="description" id="description">{{ product.description }}</textarea>
+    </div>
+    <div>
+      <label for="price">Prix</label>
+      <input type="number" name="price" id="price" value="{{ product.price }}" required />
+    </div>
+    <div>
+      <label for="quantity">Quantité</label>
+      <input type="number" name="quantity" id="quantity" value="{{ product.quantity }}" required />
+    </div>
+    <div>
+      <label for="category_id">Catégorie</label>
+      <select name="category_id" id="category_id">
+        {% for category in categories %}
+          <option value="{{ category.id }}" {{ product.category_id == category.id ? "selected" : "" }}>
+            {{ category.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="image">Image</label>
+      <input type="file" name="image" id="image" />
+    </div>
+    <div>
+      <input type="submit" value="Modifier" />
     </div>
   
   </form>

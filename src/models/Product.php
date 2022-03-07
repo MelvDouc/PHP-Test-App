@@ -151,4 +151,19 @@ class Product extends Model
     if (!$insertion)
       throw new \Exception("Product could not be saved.");
   }
+
+  public function update()
+  {
+    return  Application::getDb()->update(static::TABLE_NAME, [
+      "name" => $this->name,
+      "description" => $this->description,
+      "price" => $this->price,
+      "quantity" => $this->quantity,
+      "category_id" => $this->category_id,
+      "seller_id" => $this->seller_id,
+      "image" => $this->image
+    ], [
+      "id" => $this->id
+    ]);
+  }
 }

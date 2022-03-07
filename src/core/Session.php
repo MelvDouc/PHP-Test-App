@@ -12,7 +12,7 @@ class Session
     $_SESSION[self::TEMP_DATA_KEY] ??= [];
   }
 
-  private function getTempData(string $key): mixed
+  public function getTempData(string $key): mixed
   {
     if (!array_key_exists($key, $_SESSION[self::TEMP_DATA_KEY]))
       return null;
@@ -22,7 +22,7 @@ class Session
     return $data;
   }
 
-  private function setTempData(string $key, mixed $data): Session
+  public function setTempData(string $key, mixed $data): Session
   {
     $_SESSION[self::TEMP_DATA_KEY][$key] = $data;
     return $this;

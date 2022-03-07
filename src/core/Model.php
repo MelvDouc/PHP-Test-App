@@ -108,7 +108,7 @@ class Model
     $this->image = md5($pathInfo["filename"]) . "." . $pathInfo["extension"];
     move_uploaded_file(
       $img["tmp_name"],
-      Application::joinPaths("static", "img", "products", $this->image)
+      Application::joinPaths("static", "img", static::TABLE_NAME, $this->image)
     );
   }
 }

@@ -4,7 +4,14 @@ namespace TestApp\Core;
 
 class Request
 {
+  private array $body;
   private array $params = [];
+  private array $middlewareData = [];
+
+  public function __construct()
+  {
+    $this->body = $_POST;
+  }
 
   public function getMethod(): string
   {
@@ -43,8 +50,35 @@ class Request
     return $this;
   }
 
-  public function getBody(): array
+  public function getMiddlewareData(string $key): mixed
   {
-    return array_map("trim", $_POST);
+    return $this->middlewareData[$key] ?? null;
+  }
+
+  public function setMiddlewareData(string $key, mixed $value): Request
+  {
+    $this->middlewareData[$key] = $value;
+    return $this;
+  }
+
+  public function getBody(string $key = null, mixed $default = null): mixed
+  {
+    if (!$key)
+      return array_map("trim", $this->body);
+
+    if (!isset($this->body[$key]))
+      return $default;
+
+    $value = trim($this->body[$key]);
+    $type = gettype($default);
+    if ($type === "string")
+      return $value;
+    if ($type === "int")
+      return (int) $value;
+    if ($type === "float")
+      return (float) $value;
+    if ($type === "bool")
+      return (bool) $value;
+    return $value;
   }
 }
