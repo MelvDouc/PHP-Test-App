@@ -28,22 +28,19 @@ class Database
     $values = [];
 
     foreach ($filter as $key => $value) {
-      if (in_array($key, self::$comparers)) {
+      $result = null;
+      if (in_array($key, self::$comparers))
         $result = self::escapeQuery($value, $key, $logicalOperator);
-        array_push($placeholders, $result[self::PLACEHOLDERS_KEY]);
-        array_push($values, ...$result[self::VALUES_KEY]);
-        continue;
-      }
-
-      if ($key === "AND" || $key === "OR") {
+      else if ($key === "AND" || $key === "OR")
         $result = self::escapeQuery($value, $comparer, $key);
+
+      if ($result) {
         array_push($placeholders, $result[self::PLACEHOLDERS_KEY]);
         array_push($values, ...$result[self::VALUES_KEY]);
-        continue;
+      } else {
+        array_push($placeholders, "$key $comparer ?");
+        array_push($values, $value);
       }
-
-      array_push($placeholders, "$key $comparer ?");
-      array_push($values, $value);
     }
 
     $placeholders = implode(($logicalOperator ? " $logicalOperator " : ""), $placeholders);
