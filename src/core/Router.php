@@ -4,12 +4,13 @@ namespace TestApp\Core;
 
 class Router
 {
-  private string $basePath;
-  private array $routes = [];
+  private readonly string $basePath;
+  private readonly array $routes;
 
   public function __construct(string $basePath)
   {
     $this->basePath = $basePath;
+    $this->routes = [];
   }
 
   private function prefix(string $path): string

@@ -10,9 +10,21 @@ use TestApp\Utils\StringUtils;
 
 class AuthController extends Controller
 {
+  // Middleware
+  public static function redirectUserIfSignedIn(Request $req, Response $res)
+  {
+    if (!($user = $res->session->getUser()))
+      return;
+
+    $res->session->setErrorMessages(["Vous êtes déjà connecté."]);
+    $res->redirect("profile-home", [
+      "username" => $user["username"]
+    ]);
+    exit;
+  }
+
   public static function signin_GET($req, Response $res)
   {
-    self::redirectUserIfSignedIn($res);
     $res->render("auth/sign-in");
   }
 
@@ -65,7 +77,6 @@ class AuthController extends Controller
 
   public static function signUp_GET(Request $req, Response $res)
   {
-    self::redirectUserIfSignedIn($res);
     $res->render("auth/sign-up");
   }
 
@@ -118,7 +129,6 @@ class AuthController extends Controller
 
   public static function activateAccount(Request $req, Response $res)
   {
-    self::redirectUserIfSignedIn($res);
     $verif_string = $req->getParam("verif_string");
 
     if (!$verif_string)
@@ -158,17 +168,5 @@ class AuthController extends Controller
       $errors[] = "Les mots de passe ne se correspondent pas.";
 
     return [...$errors, ...StringUtils::checkPasswordStrength($password1)];
-  }
-
-  private static function redirectUserIfSignedIn(Response $res)
-  {
-    if (!($user = $res->session->getUser()))
-      return;
-
-    $res->session->setErrorMessages(["Vous êtes déjà connecté."]);
-    $res->redirect("profile-home", [
-      "username" => $user["username"]
-    ]);
-    die;
   }
 }

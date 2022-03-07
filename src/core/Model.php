@@ -9,12 +9,10 @@ class Model
 {
   public const TABLE_NAME = "";
 
-  public static function findOne(array $filter)
+  public static function findOne(array $filter): static|null
   {
     $dbRow = Application::getDb()->getOne(static::TABLE_NAME, $filter);
-    if (!$dbRow)
-      return null;
-    return new static($dbRow);
+    return ($dbRow) ? new static($dbRow) : null;
   }
 
   public static function findAll(array $columns = ["*"], array $filter = [], string $orderBy = "id"): array

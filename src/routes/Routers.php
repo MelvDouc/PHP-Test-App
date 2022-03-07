@@ -30,14 +30,20 @@ $authRouter
   ->addRoute("sign-in", [
     "path" => "/connexion",
     "methods" => [
-      "GET" => [AuthController::class, "signIn_GET"],
+      "GET" => [
+        [AuthController::class, "redirectUserIfSignedIn"],
+        [AuthController::class, "signIn_GET"]
+      ],
       "POST" => [AuthController::class, "signIn_POST"]
     ]
   ])
   ->addRoute("sign-up", [
     "path" => "/inscription",
     "methods" => [
-      "GET" => [AuthController::class, "signUp_GET"],
+      "GET" => [
+        [AuthController::class, "redirectUserIfSignedIn"],
+        [AuthController::class, "signUp_GET"]
+      ],
       "POST" => [AuthController::class, "signUp_POST"]
     ]
   ])
@@ -50,7 +56,10 @@ $authRouter
   ->addRoute("activate-account", [
     "path" => "/activation-compte/:verif_string",
     "methods" => [
-      "GET" => [AuthController::class, "activateAccount"]
+      "GET" => [
+        [AuthController::class, "redirectUserIfSignedIn"],
+        [AuthController::class, "activateAccount"]
+      ]
     ]
   ]);
 

@@ -40,14 +40,15 @@ class Application
     );
   }
 
-  public Database $db;
-  private array $routes = [];
+  private readonly Database $db;
+  private readonly array $routes;
 
   public function __construct(string $ROOT_DIR)
   {
     self::$ROOT_DIR = $ROOT_DIR;
     self::$instance = $this;
     $this->db = new Database();
+    $this->routes = [];
   }
 
   /**
@@ -55,7 +56,7 @@ class Application
    */
   public function useRouter(Router $router): Application
   {
-    $this->routes = array_merge($this->routes, $router->getRoutes());
+    array_push($this->routes, ...$router->getRoutes());
     return $this;
   }
 

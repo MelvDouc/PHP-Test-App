@@ -4,13 +4,14 @@ namespace TestApp\Core;
 
 class Request
 {
-  private array $body;
+  private readonly array $body;
+  private readonly array $middlewareData;
   private array $params = [];
-  private array $middlewareData = [];
 
   public function __construct()
   {
     $this->body = $_POST;
+    $this->middlewareData = [];
   }
 
   public function getMethod(): string

@@ -4,7 +4,7 @@ namespace TestApp\Core;
 
 class Response
 {
-  public Session $session;
+  public readonly Session $session;
 
   public function __construct()
   {

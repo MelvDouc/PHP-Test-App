@@ -54,26 +54,26 @@ class Database
       $statement->bindValue($i, $values[$i - 1]);
   }
 
-  public \PDO $db;
+  private readonly PDO $conn;
 
   public function __construct()
   {
-    $this->connect();
+    $this->conn = $this->getConnection();
   }
 
-  private function connect(): void
+  private function getConnection(): PDO
   {
     try {
       $host = $_ENV["DB_HOST"];
       $dbName = $_ENV["DB_NAME"];
 
-      $db = new PDO(
+      $conn = new PDO(
         "mysql:host=$host;dbname=$dbName;charset=utf8",
         $_ENV["DB_USER"],
         $_ENV["DB_PASSWORD"]
       );
-      $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-      $this->db = $db;
+      $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      return $conn;
     } catch (\PDOException $e) {
       echo $e->getMessage();
     }
@@ -81,12 +81,12 @@ class Database
 
   private function query(string $sql): PDOStatement|false
   {
-    return $this->db->query($sql);
+    return $this->conn->query($sql);
   }
 
   private function prepare(string $sql): PDOStatement|false
   {
-    return $this->db->prepare($sql);
+    return $this->conn->prepare($sql);
   }
 
   public function getOne(string $tableName, array $filter)
@@ -157,7 +157,7 @@ class Database
     $statement = $this->prepare("UPDATE $tableName SET $columns WHERE $placeholders");
     self::bindValues(
       $statement,
-      array_merge($setClause[self::VALUES_KEY], $whereClause[self::VALUES_KEY])
+      [...$setClause[self::VALUES_KEY], $whereClause[self::VALUES_KEY]]
     );
     return $statement->execute();
   }
