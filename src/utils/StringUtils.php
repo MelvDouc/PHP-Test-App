@@ -16,4 +16,18 @@ class StringUtils
 
     return $str;
   }
+
+  public static function checkPasswordStrength(string $password): array
+  {
+    $errors = [];
+    $length = strlen($password);
+    if ($length < 8)
+      $errors[] = "Mot de passe trop court : 8 caractères minimum.";
+    if ($length > 30)
+      $errors[] = "Mot de passe trop long : 30 caractères maximum.";
+    if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/", $password))
+      $errors[] = "Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre.";
+
+    return $errors;
+  }
 }

@@ -6,6 +6,7 @@ use TestApp\Core\Controller;
 use TestApp\Core\Request;
 use TestApp\Core\Response;
 use TestApp\Models\User;
+use TestApp\Utils\StringUtils;
 
 class AuthController extends Controller
 {
@@ -153,11 +154,10 @@ class AuthController extends Controller
       $errors[] = "Veuillez choisir un nom d'utilisateur entre 5 et 50 caractères.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL))
       $errors[] = "Veuillez saisir une adresse email valide.";
-    // TODO: check password strength
     if ($password1 !== $password2)
       $errors[] = "Les mots de passe ne se correspondent pas.";
 
-    return $errors;
+    return [...$errors, ...StringUtils::checkPasswordStrength($password1)];
   }
 
   private static function redirectUserIfSignedIn(Response $res)
