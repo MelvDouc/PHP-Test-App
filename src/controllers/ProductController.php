@@ -44,11 +44,6 @@ class ProductController
   {
     $user = $res->session->getUser();
 
-    if (!$user) {
-      $res->session->setErrorMessages(["Vous n'êtes pas connecté(e)."]);
-      return $res->redirect("sign-in");
-    }
-
     $res->render("products/add", [
       "categories" => Category::findAll(["id", "name"])
     ]);
@@ -82,7 +77,8 @@ class ProductController
       $res->session->setSuccessMessage("L'article a bien été ajouté.");
       return $res->redirect("product", ["slug" => $product->getSlug()]);
     } catch (\Exception $e) {
-      $res->session->setErrorMessages([$e]);
+      $res->session->setErrorMessages("L'article n'a pas pu être ajouté.");
+      Application::logError($e);
       return $res->redirect("add-product");
     }
   }
@@ -90,7 +86,6 @@ class ProductController
   public static function update_GET(Request $req, Response $res)
   {
     $product = $req->getMiddlewareData("product");
-    $user = $res->session->getUser();
 
     if (!self::canProductBeUpdatedByAppUser($res, $product))
       return $res->setForbidden();
@@ -145,11 +140,11 @@ class ProductController
 
   public static function delete(Request $req, Response $res)
   {
-    $id = (int) $req->getParam("id");
+    $id = $req->getParam("id");
     if (!$id)
       return $res->redirectNotFound();
 
-    $product = Product::findOne(["id" => $id]);
+    $product = Product::findOne(["id" => (int)$id]);
     if (!$product)
       return $res->redirectNotFound();
 

@@ -16,14 +16,24 @@ class AuthController extends Controller
     if (!($user = $res->session->getUser()))
       return;
 
-    $res->session->setErrorMessages(["Vous êtes déjà connecté."]);
+    $res->session->setErrorMessages("Vous êtes déjà connecté.");
     $res->redirect("profile-home", [
       "username" => $user["username"]
     ]);
     exit;
   }
 
-  public static function signin_GET($req, Response $res)
+  public static function checkIfUserSignedIn(Request $req, Response $res)
+  {
+    if ($res->session->getUser())
+      return;
+
+    $res->session->setErrorMessages("Vous n'êtes pas connecté(e).");
+    $res->redirect("sign-in");
+    exit;
+  }
+
+  public static function signin_GET(Request $req, Response $res)
   {
     $res->render("auth/sign-in");
   }

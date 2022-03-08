@@ -97,6 +97,7 @@ $productRouter = new Router("/articles");
 $productRouter
   ->addRoute("add-product", [
     "path" => "/ajouter",
+    "middleware" => [AuthController::class, "checkIfUserSignedIn"],
     "methods" => [
       "GET" => [ProductController::class, "add_GET"],
       "POST" => [ProductController::class, "add_POST"]
@@ -104,6 +105,7 @@ $productRouter
   ])
   ->addRoute("update-product", [
     "path" => "/modifier/:slug",
+    "middleware" => [AuthController::class, "checkIfUserSignedIn"],
     "methods" => [
       "GET" => [
         [ProductController::class, "setProduct"],

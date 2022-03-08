@@ -17,9 +17,9 @@ class Router
 
   private function prefix(string $path): string
   {
-    if ($this->basePath === '/')
+    if ($this->basePath === "/")
       return $path;
-    if ($path === '/')
+    if ($path === "/")
       return $this->basePath;
     return $this->basePath . $path;
   }
@@ -33,15 +33,20 @@ class Router
   {
     $params["path"] = $this->prefix($params["path"]);
 
+    if (isset($params["middleware"])) {
+      $middleware = $params["middleware"];
+      foreach ($params["methods"] as $key => $value) {
+        $params["methods"][$key] = (is_callable($middleware[0]))
+          ? [...$middleware, $value]
+          : [$middleware, $value];
+      }
+    }
+
     if ($this->middleware)
       foreach ($params["methods"] as $key => $value)
         $params["methods"][$key] = [...$this->middleware, $value];
     $this->routes[$name] = $params;
 
-    // $this->routes[$name] = [
-    //   "path" => $this->prefix($params["path"]),
-    //   "methods" => $params["methods"]
-    // ];
     return $this;
   }
 
