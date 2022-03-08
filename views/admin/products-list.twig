@@ -36,6 +36,9 @@
           <td>{{ product.created_at }}</td>
           <td>
             <a href="{{ route('update-product', {slug: product.slug}) }}">Modifier</a>
+            <form action="{{ route('delete-product', {id: product.id}) }}" method="POST">
+              <input type="submit" value="Supprimer" />
+            </form>
           </td>
         </tr>
       {% endfor %}

@@ -5,11 +5,13 @@ namespace TestApp\Core;
 class Router
 {
   private readonly string $basePath;
-  private readonly array $routes;
+  private array $middleware;
+  private array $routes;
 
   public function __construct(string $basePath)
   {
     $this->basePath = $basePath;
+    $this->middleware = [];
     $this->routes = [];
   }
 
@@ -29,10 +31,23 @@ class Router
 
   public function addRoute(string $name, array $params): Router
   {
-    $this->routes[$name] = [
-      "path" => $this->prefix($params["path"]),
-      "methods" => $params["methods"]
-    ];
+    $params["path"] = $this->prefix($params["path"]);
+
+    if ($this->middleware)
+      foreach ($params["methods"] as $key => $value)
+        $params["methods"][$key] = [...$this->middleware, $value];
+    $this->routes[$name] = $params;
+
+    // $this->routes[$name] = [
+    //   "path" => $this->prefix($params["path"]),
+    //   "methods" => $params["methods"]
+    // ];
+    return $this;
+  }
+
+  public function addMiddleware(callable $middleware): Router
+  {
+    $this->middleware[] = $middleware;
     return $this;
   }
 }

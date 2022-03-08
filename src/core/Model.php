@@ -3,6 +3,7 @@
 namespace TestApp\Core;
 
 use DateTime;
+use Exception;
 use ReflectionProperty;
 
 class Model
@@ -108,5 +109,12 @@ class Model
       $img["tmp_name"],
       Application::joinPaths("static", "img", static::TABLE_NAME, $this->image)
     );
+  }
+
+  public function delete(): void
+  {
+    $tableName = static::TABLE_NAME;
+    if (!Application::getDb()->delete($tableName, ["id" => $this->id]))
+      throw new Exception("[$tableName] couldn't be deleted.");
   }
 }

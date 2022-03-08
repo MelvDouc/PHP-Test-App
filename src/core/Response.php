@@ -55,4 +55,10 @@ class Response
     http_response_code(405);
     exit("Method not allowed.");
   }
+
+  public function setForbidden(): void
+  {
+    http_response_code(403);
+    exit("Forbidden.");
+  }
 }

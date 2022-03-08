@@ -43,9 +43,9 @@ class Session
     return $this->getTempData("errors");
   }
 
-  public function setErrorMessages(array $messages): Session
+  public function setErrorMessages(string|array $messages): Session
   {
-    return $this->setTempData("errors", $messages);
+    return $this->setTempData("errors", is_string($messages) ? [$messages] : $messages);
   }
 
   public function getFormData(): array|null

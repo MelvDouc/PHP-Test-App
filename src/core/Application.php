@@ -34,20 +34,27 @@ class Application
     if (!array_key_exists($routeName, self::$instance->routes))
       throw new Exception("Invalid route name.");
 
-    return "http://localhost:5000/" . Path::addContext(
+    return self::$instance->baseUrl . "/" . Path::addContext(
       self::$instance->routes[$routeName]["path"],
       $context
     );
   }
 
+  public static function logError(\Exception $error): void
+  {
+    error_log($error->getMessage(), 3, self::joinPaths("data", "log", "php.log"));
+  }
+
   private readonly Database $db;
-  private readonly array $routes;
+  private readonly string $baseUrl;
+  private array $routes;
 
   public function __construct(string $ROOT_DIR)
   {
     self::$ROOT_DIR = $ROOT_DIR;
     self::$instance = $this;
     $this->db = new Database();
+    $this->baseUrl = ($_ENV["ENV"] === "development") ? "http://localhost:5000" : "";
     $this->routes = [];
   }
 
@@ -56,7 +63,8 @@ class Application
    */
   public function useRouter(Router $router): Application
   {
-    array_push($this->routes, ...$router->getRoutes());
+    foreach ($router->getRoutes() as $key => $value)
+      $this->routes[$key] = $value;
     return $this;
   }
 

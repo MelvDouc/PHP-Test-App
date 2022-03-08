@@ -9,6 +9,17 @@ use TestApp\Models\User;
 
 class AdminController
 {
+  public static function setForbiddenIfNotAdmin(Request $req, Response $res)
+  {
+    $user = $res->session->getUser();
+
+    if ($user && $user["role"] === User::$ROLES["ADMIN"])
+      return;
+
+    $res->setForbidden();
+    exit;
+  }
+
   public static function home(Request $req, Response $res)
   {
     $res->render("admin/home");

@@ -7,6 +7,18 @@
   <title>Espace Admin - {% block title %}{% endblock %}</title>
 </head>
 <body>
+  {% if app.successMessage %}
+    <p>{{ app.successMessage }}</p>
+  {% endif %}
+
+  {% if app.errorMessages %}
+    <ul>
+      {% for message in app.errorMessages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <main>
     {% block main %}{% endblock %}
   </main>

@@ -12,6 +12,10 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 class User extends Model
 {
   public const TABLE_NAME = "user";
+  public static array $ROLES = [
+    "ADMIN" => 0,
+    "USER" => 1
+  ];
 
   private static function generateVerifString(): string
   {
@@ -156,7 +160,7 @@ class User extends Model
       $email->Body = $htmlBody;
       return $email->send();
     } catch (PHPMailerException $e) {
-      error_log($e, 3, Application::joinPaths("data", "log", "php.log"));
+      Application::logError($e);
       return false;
     }
   }

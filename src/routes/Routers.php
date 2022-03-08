@@ -112,6 +112,15 @@ $productRouter
       "POST" => [ProductController::class, "update_POST"]
     ]
   ])
+  ->addRoute("delete-product", [
+    "path" => "/supprimer/:id",
+    "methods" => [
+      "POST" => [
+        [AdminController::class, "setForbiddenIfNotAdmin"],
+        [ProductController::class, "delete"]
+      ]
+    ]
+  ])
   ->addRoute("product", [
     "path" => "/:slug",
     "methods" => [
@@ -124,6 +133,7 @@ $productRouter
 
 $adminRouter = new Router("/admin");
 $adminRouter
+  ->addMiddleware([AdminController::class, "setForbiddenIfNotAdmin"])
   ->addRoute("admin-home", [
     "path" => "/",
     "methods" => [
