@@ -1,6 +1,6 @@
 <?php
 
-namespace TestApp\Core;
+namespace TestApp\Utils;
 
 class Path
 {
