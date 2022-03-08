@@ -50,8 +50,8 @@ class Database
 
   private static function bindValues(PDOStatement &$statement, array $values): void
   {
-    for ($i = 1; $i <= count($values); $i++)
-      $statement->bindValue($i, $values[$i - 1]);
+    foreach ($values as $i => $value)
+      $statement->bindValue($i + 1, $value);
   }
 
   private readonly PDO $conn;
@@ -157,7 +157,7 @@ class Database
     $statement = $this->prepare("UPDATE $tableName SET $columns WHERE $placeholders");
     self::bindValues(
       $statement,
-      [...$setClause[self::VALUES_KEY], $whereClause[self::VALUES_KEY]]
+      [...$setClause[self::VALUES_KEY], ...$whereClause[self::VALUES_KEY]]
     );
     return $statement->execute();
   }
