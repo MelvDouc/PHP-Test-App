@@ -92,10 +92,8 @@ class Application
 
       $req->setParams(Path::getParamsMap($dynamicPath, $staticPath));
       $actions = $route["methods"][$httpMethod];
-      if (!is_callable($actions[0])) {
-        call_user_func($actions, $req, $res);
-        return;
-      }
+      if (!is_callable($actions[0]))
+        $actions = [$actions];
       foreach ($actions as $action)
         call_user_func($action, $req, $res);
       return;
