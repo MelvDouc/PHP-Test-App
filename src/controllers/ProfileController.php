@@ -8,12 +8,22 @@ use TestApp\Models\User;
 
 class ProfileController
 {
-  public static function index(Request $req, Response $res)
+  // Middleware
+  public static function getUser(Request $req, Response $res)
   {
-    $user = self::getUser($req);
+    $user = User::findOne([
+      "username" => $req->getParam("username")
+    ]);
 
     if (!$user)
       return $res->redirectNotFound();
+
+    $req->setMiddlewareData("user", $user);
+  }
+
+  public static function index(Request $req, Response $res)
+  {
+    $user = $req->getMiddlewareData("user");
 
     $res->render("profile/index", [
       "username" => $user->getUsername()
@@ -22,24 +32,12 @@ class ProfileController
 
   public static function products(Request $req, Response $res)
   {
-    $user = self::getUser($req);
-
-    if (!$user)
-      return $res->redirectNotFound();
-
+    $user = $req->getMiddlewareData("user");
     $products = $user->getProducts();
+
     return $res->render("profile/products", [
       "username" => $user->getUsername(),
       "products" => $products
     ]);
-  }
-
-  private static function getUser(Request $req): User|null
-  {
-    $username = $req->getParam("username");
-    if (!$username)
-      return null;
-
-    return User::findOne(["username" => $username]);
   }
 }

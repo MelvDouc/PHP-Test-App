@@ -65,6 +65,7 @@ $authRouter
 
 $profileRouter = new Router("/profil");
 $profileRouter
+  ->addMiddleware([ProfileController::class, "getUser"])
   ->addRoute("profile-home", [
     "path" => "/:username",
     "methods" => [
