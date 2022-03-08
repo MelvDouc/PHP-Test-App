@@ -36,32 +36,16 @@
           <td>{{ product.created_at }}</td>
           <td>
             <a href="{{ route('update-product', {slug: product.slug}) }}">Modifier</a>
-            <form action="{{ route('delete-product', {id: product.id}) }}" method="POST" class="delete-product-form">
-              <input type="submit" value="Supprimer" />
-            </form>
+            <form
+              action="{{ route('delete-product', {id: product.id}) }}"
+              is="confirm-form"
+              data-confirm-text="Êtes-vous sûr(e) de vouloir supprimer cet article ?"
+              data-button-text="Supprimer"
+            ></form>
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
 
-{% endblock %}
-
-{% block javascripts %}
-  <script>
-    const deleteProductForms = document.querySelectorAll(".delete-product-form");
-
-    deleteProductForms.forEach(form => {
-      form.addEventListener("submit", e => {
-        e.preventDefault();
-
-        const confirmation = confirm("Êtes-vous sûr de vouloir supprimer cet article ?");
-        if (!confirmation)
-          return;
-
-        form.submit();
-      });
-
-    });
-  </script>
 {% endblock %}
