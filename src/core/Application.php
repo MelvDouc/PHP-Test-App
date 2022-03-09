@@ -33,10 +33,10 @@ class Application
   public static function getFullRoute(string $routeName, array $context = [])
   {
     if (!array_key_exists($routeName, self::$instance->routes))
-      throw new Exception("Invalid route name.");
+      throw new Exception("Invalid route name: $routeName.");
 
     return self::$instance->baseUrl . "/" . Path::addContext(
-      self::$instance->routes[$routeName]["path"],
+      self::$instance->routes[$routeName]->getPath(),
       $context
     );
   }
@@ -80,20 +80,18 @@ class Application
     $httpMethod = $req->getMethod();
 
     foreach ($this->routes as $route) {
-      $dynamicPath = $route["path"];
+      $dynamicPath = $route->getPath();
 
       if (!Path::compare($dynamicPath, $staticPath))
         continue;
 
-      if (!array_key_exists($httpMethod, $route["methods"])) {
+      if (!$route->hasMethod($httpMethod)) {
         $res->setMethodNotAllowed();
         return;
       }
 
       $req->setParams(Path::getParamsMap($dynamicPath, $staticPath));
-      $actions = $route["methods"][$httpMethod];
-      if (!is_callable($actions[0]))
-        $actions = [$actions];
+      $actions = $route->getAction($httpMethod);
       foreach ($actions as $action)
         call_user_func($action, $req, $res);
       return;

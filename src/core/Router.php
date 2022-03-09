@@ -2,17 +2,26 @@
 
 namespace TestApp\Core;
 
+use TestApp\Routes\Route;
+
 class Router
 {
   private readonly string $basePath;
-  private array $middleware;
-  private array $routes;
+  private array $middleware = [];
+  private array $routes = [];
 
   public function __construct(string $basePath)
   {
     $this->basePath = $basePath;
-    $this->middleware = [];
-    $this->routes = [];
+  }
+
+  public function route(string $name, string $path): Route
+  {
+    $path = $this->prefix($path);
+    $route = new Route($name, $path);
+    $route->middleware(...$this->middleware);
+    $this->routes[$name] = $route;
+    return $this->routes[$name];
   }
 
   private function prefix(string $path): string
@@ -29,30 +38,9 @@ class Router
     return $this->routes;
   }
 
-  public function addRoute(string $name, array $params): Router
+  public function addMiddleware(callable ...$middleware): Router
   {
-    $params["path"] = $this->prefix($params["path"]);
-
-    if (isset($params["middleware"])) {
-      $middleware = $params["middleware"];
-      foreach ($params["methods"] as $key => $value) {
-        $params["methods"][$key] = (is_callable($middleware[0]))
-          ? [...$middleware, $value]
-          : [$middleware, $value];
-      }
-    }
-
-    if ($this->middleware)
-      foreach ($params["methods"] as $key => $value)
-        $params["methods"][$key] = [...$this->middleware, $value];
-    $this->routes[$name] = $params;
-
-    return $this;
-  }
-
-  public function addMiddleware(callable $middleware): Router
-  {
-    $this->middleware[] = $middleware;
+    array_push($this->middleware, ...$middleware);
     return $this;
   }
 }

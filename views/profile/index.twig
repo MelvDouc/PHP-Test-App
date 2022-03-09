@@ -4,7 +4,7 @@
 
 {% block main %}
   {% if app.user %}
-    {% if app.user.role == 0 %}
+    {% if app.user.role == 0 and app.user.username == username %}
       <div><a href="{{ route('admin-home') }}">Espace Admin</a></div>
     {% endif %}
     <div><a href="{{ route('user-products', { username: username }) }}">Mes articles</a></div>

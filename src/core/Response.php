@@ -27,9 +27,9 @@ class Response
 
   public function render(string $template, array $locals = []): void
   {
-    $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(Application::joinPaths("views")), [
+    $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(Application::joinPaths("views")), /*[
       "cache" => Application::joinPaths("static", "compilation-cache")
-    ]);
+    ]*/);
     $twig->addFunction(new \Twig\TwigFunction("route", function ($routeName, $context = []) {
       return Application::getFullRoute($routeName, $context);
     }));
