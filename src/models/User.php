@@ -20,7 +20,7 @@ class User extends Model
   private static function generateVerifString(): string
   {
     $verif_string = StringUtils::getRandomString(128);
-    if ((bool) static::findOne(["verif_string" => $verif_string]))
+    if ((bool) self::findOne(["verif_string" => $verif_string]))
       return self::generateVerifString();
     return $verif_string;
   }

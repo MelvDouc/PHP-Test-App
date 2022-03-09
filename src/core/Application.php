@@ -23,7 +23,7 @@ class Application
    */
   public static function joinPaths(...$pathSegments): string
   {
-    return implode("/", [self::$ROOT_DIR, ...$pathSegments]);
+    return realpath(implode("/", [self::$ROOT_DIR, ...$pathSegments]));
   }
 
   /**

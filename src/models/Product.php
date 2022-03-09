@@ -38,7 +38,7 @@ class Product extends Model
   {
     $slug = preg_replace("/\s+/", "-", $this->name);
 
-    if (static::findOne(["slug" => $slug])) {
+    if (self::findOne(["slug" => $slug])) {
       $timestamp = (new DateTime())->format("Y-m-d-H-i-s");
       $slug .= "-$timestamp";
     }
@@ -154,7 +154,7 @@ class Product extends Model
 
   public function update()
   {
-    return  Application::getDb()->update(static::TABLE_NAME, [
+    return  Application::getDb()->update(self::TABLE_NAME, [
       "name" => $this->name,
       "description" => $this->description,
       "price" => $this->price,

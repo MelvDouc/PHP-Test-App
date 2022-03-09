@@ -11,7 +11,7 @@ class Response
     $this->session = new Session();
   }
 
-  private function getApp(): array
+  private function getAppGlobals(): array
   {
     return [
       "user" => $this->session->getUser(),
@@ -27,14 +27,15 @@ class Response
 
   public function render(string $template, array $locals = []): void
   {
-    $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(Application::joinPaths("views")), /*[
-      "cache" => Application::joinPaths("static", "compilation-cache")
-    ]*/);
+    $options = [];
+    if ($_ENV["ENV"] === "production")
+      $options["cache"] = Application::joinPaths("static", "compilation-cache");
+    $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(Application::joinPaths("views")), $options);
     $twig->addFunction(new \Twig\TwigFunction("route", function ($routeName, $context = []) {
       return Application::getFullRoute($routeName, $context);
     }));
-    $locals["app"]  = $this->getApp();
     http_response_code(200);
+    $locals["app"]  = $this->getAppGlobals();
     $twig->display("$template.twig", $locals);
   }
 
