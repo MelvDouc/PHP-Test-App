@@ -15,11 +15,9 @@ class ProductController
   // Middleware
   public static function setProduct(Request $req, Response $res)
   {
-    $slug = $req->getParam("slug");
-    if (!$slug)
-      return $res->redirectNotFound();
-
-    $product = Product::findOne(["slug" => $slug]);
+    $product = Product::findOne([
+      "slug" => $req->getParam("slug")
+    ]);
     if (!$product)
       return $res->redirectNotFound();
 
@@ -42,8 +40,6 @@ class ProductController
 
   public static function add_GET(Request $req, Response $res)
   {
-    $user = $res->session->getUser();
-
     $res->render("products/add", [
       "categories" => Category::findAll(["id", "name"])
     ]);
@@ -140,11 +136,9 @@ class ProductController
 
   public static function delete(Request $req, Response $res)
   {
-    $id = $req->getParam("id");
-    if (!$id)
-      return $res->redirectNotFound();
-
-    $product = Product::findOne(["id" => (int)$id]);
+    $product = Product::findOne([
+      "id" => (int)$req->getParam("id")
+    ]);
     if (!$product)
       return $res->redirectNotFound();
 

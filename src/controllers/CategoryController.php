@@ -18,12 +18,9 @@ class CategoryController extends Controller
 
   public static function single(Request $req, Response $res)
   {
-    $categoryName = $req->getParam("category");
-
-    if (!$categoryName)
-      return $res->redirectNotFound();
-
-    $category = Category::findOne(["name" => $categoryName]);
+    $category = Category::findOne([
+      "name" => $req->getParam("category")
+    ]);
 
     if (!$category)
       return $res->redirectNotFound();

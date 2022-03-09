@@ -92,11 +92,10 @@ class AuthController extends Controller
 
   public static function signUp_POST(Request $req, Response $res)
   {
-    $body = $req->getBody();
-    $username = $body["username"] ?? null;
-    $email = $body["email"] ?? null;
-    $password1 = $body["password1"] ?? null;
-    $password2 = $body["password2"] ?? null;
+    $username = $req->getBody("username", "");
+    $email = $req->getBody("email", "");
+    $password1 = $req->getBody("password1", "");
+    $password2 = $req->getBody("password2", "");
     $errors = self::getSignUpErrors($username, $email, $password1, $password2);
 
     if ($errors) {
@@ -154,22 +153,17 @@ class AuthController extends Controller
     $res->redirect("sign-in");
   }
 
-  private static function getSignUpErrors($username, $email, $password1, $password2): array
+  private static function getSignUpErrors(string $username, string $email, string $password1, string $password2): array
   {
-    if (
-      !is_string($username)
-      || !is_string($email)
-      || !is_string($password1)
-      || !is_string($password2)
-    )
+    if (!$username || !$email || !$password1 || !$password2)
       return ["Veuillez remplir tous les champs."];
+    if ((bool) User::findOne(["email" => $email]))
+      return ["Un compte à cette adresse email existe déjà."];
+    if ((bool) User::findOne(["username" => $username]))
+      return ["Nom d'utilisateur indisponible."];
 
     $errors = [];
 
-    if ((bool) User::findOne(["username" => $username]))
-      $errors[] = "Nom d'utilisateur indisponible.";
-    if ((bool) User::findOne(["email" => $email]))
-      $errors[] = "Un compte à cette adresse email existe déjà.";
     if (strlen($username) < 5 || strlen($username) > 50)
       $errors[] = "Veuillez choisir un nom d'utilisateur entre 5 et 50 caractères.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL))
