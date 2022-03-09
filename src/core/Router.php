@@ -17,8 +17,7 @@ class Router
 
   public function route(string $name, string $path): Route
   {
-    $path = $this->prefix($path);
-    $route = new Route($path);
+    $route = new Route($this->prefix($path));
     $route->addMiddleware(...$this->middleware);
     $this->routes[$name] = $route;
     return $this->routes[$name];

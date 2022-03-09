@@ -18,12 +18,14 @@ $app = new Application($rootDir);
 
 // The various routers holding all of the application's routes.
 $app
-  ->useRouter($homeRouter)
-  ->useRouter($authRouter)
-  ->useRouter($profileRouter)
-  ->useRouter($categoryRouter)
-  ->useRouter($productRouter)
-  ->useRouter($adminRouter);
+  ->useRouters(
+    $homeRouter,
+    $authRouter,
+    $profileRouter,
+    $categoryRouter,
+    $productRouter,
+    $adminRouter
+  );
 
 // Execute the appropriate controller action based on the current path and HTTP method.
 $app->run();

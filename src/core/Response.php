@@ -32,7 +32,7 @@ class Response
       $options["cache"] = Application::joinPaths("static", "compilation-cache");
     $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(Application::joinPaths("views")), $options);
     $twig->addFunction(new \Twig\TwigFunction("route", function ($routeName, $context = []) {
-      return Application::getFullRoute($routeName, $context);
+      return Application::getFullUrl($routeName, $context);
     }));
     http_response_code(200);
     $locals["app"]  = $this->getAppGlobals();
@@ -41,7 +41,7 @@ class Response
 
   public function redirect(string $routeName, array $context = []): void
   {
-    $path = Application::getFullRoute($routeName, $context);
+    $path = Application::getFullUrl($routeName, $context);
     header("Location: $path");
   }
 

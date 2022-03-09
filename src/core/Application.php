@@ -30,7 +30,7 @@ class Application
    * @param string $routeName - Matches the first argument of `(new Router())->addRoute()`.
    * @param array $context - An optional associative array containing the placeholders in the route name as keys and their corresponding values. 
    */
-  public static function getFullRoute(string $routeName, array $context = [])
+  public static function getFullUrl(string $routeName, array $context = [])
   {
     if (!array_key_exists($routeName, self::$instance->routes))
       throw new Exception("Invalid route name: $routeName.");
@@ -69,6 +69,14 @@ class Application
     return $this;
   }
 
+  public function useRouters(Router ...$routers): Application
+  {
+    foreach ($routers as $router)
+      $this->useRouter($router);
+
+    return $this;
+  }
+
   /**
    * Find the registered path and method matching the current URL. Run the corresponding controller method if found, else set 404 response.
    */
@@ -91,9 +99,13 @@ class Application
       }
 
       $req->setParams(Path::getParamsMap($dynamicPath, $staticPath));
-      $actions = [...$route->getMiddleware(), ...$route->getAction($httpMethod)];
-      foreach ($actions as $action)
+
+      foreach ($route->getMiddleware() as $middleware)
+        call_user_func($middleware, $req, $res);
+
+      foreach ($route->getAction($httpMethod) as $action)
         call_user_func($action, $req, $res);
+
       return;
     }
 
