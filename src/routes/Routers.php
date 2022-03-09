@@ -71,12 +71,12 @@ $categoryRouter
 $productRouter = new Router("/articles");
 $productRouter
   ->route("add-product", "/ajouter")
-  ->middleware([AuthController::class, "checkIfUserSignedIn"])
+  ->addMiddleware([AuthController::class, "checkIfUserSignedIn"])
   ->get([ProductController::class, "add_GET"])
   ->post([ProductController::class, "add_POST"]);
 $productRouter
   ->route("update-product", "/modifier/:slug")
-  ->middleware([AuthController::class, "checkIfUserSignedIn"])
+  ->addMiddleware([AuthController::class, "checkIfUserSignedIn"])
   ->get(
     [ProductController::class, "setProduct"],
     [ProductController::class, "update_GET"]

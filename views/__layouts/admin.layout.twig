@@ -8,6 +8,15 @@
   <title>Espace Admin - {% block title %}{% endblock %}</title>
 </head>
 <body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="{{ route('admin-home') }}">Accueil Espace Admin</a></li>
+        <li><a href="{{ route('home') }}">Retour au site</a></li>
+      </ul>
+    </nav>
+  </header>
+
   {% if app.successMessage %}
     <p>{{ app.successMessage }}</p>
   {% endif %}

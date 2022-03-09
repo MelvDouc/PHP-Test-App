@@ -4,13 +4,12 @@ namespace TestApp\Routes;
 
 class Route
 {
-  public readonly string $name;
   private readonly string $path;
   private array $actions = [];
+  private array $middleware = [];
 
-  public function __construct(string $name, string $path)
+  public function __construct(string $path)
   {
-    $this->name = $name;
     $this->path = $path;
   }
 
@@ -41,10 +40,14 @@ class Route
     return $this->actions[$method];
   }
 
-  public function middleware(callable ...$middleware): Route
+  public function getMiddleware(): array
   {
-    foreach (array_keys($this->actions) as $method)
-      $this->actions[$method] = [...$middleware, $this->actions[$method]];
+    return $this->middleware;
+  }
+
+  public function addMiddleware(callable ...$middleware): Route
+  {
+    array_push($this->middleware, ...$middleware);
 
     return $this;
   }

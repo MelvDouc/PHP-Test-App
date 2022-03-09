@@ -48,7 +48,7 @@ class Application
 
   private readonly Database $db;
   private readonly string $baseUrl;
-  private array $routes;
+  public array $routes;
 
   public function __construct(string $ROOT_DIR)
   {
@@ -64,8 +64,8 @@ class Application
    */
   public function useRouter(Router $router): Application
   {
-    foreach ($router->getRoutes() as $key => $value)
-      $this->routes[$key] = $value;
+    foreach ($router->getRoutes() as $routeName => $route)
+      $this->routes[$routeName] = $route;
     return $this;
   }
 
@@ -91,7 +91,7 @@ class Application
       }
 
       $req->setParams(Path::getParamsMap($dynamicPath, $staticPath));
-      $actions = $route->getAction($httpMethod);
+      $actions = [...$route->getMiddleware(), ...$route->getAction($httpMethod)];
       foreach ($actions as $action)
         call_user_func($action, $req, $res);
       return;
