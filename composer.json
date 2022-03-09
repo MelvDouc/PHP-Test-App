@@ -12,6 +12,9 @@
             "TestApp\\": "src/"
         }
     },
+    "scripts": {
+        "dev": "php -S localhost:5000"
+    },
     "require": {
         "phpmailer/phpmailer": "^6.6",
         "twig/twig": "^3.3"
@@ -19,7 +22,8 @@
     "config": {
         "allow-plugins": {
             "nodejs-php-fallback/nodejs-php-fallback": true
-        }
+        },
+        "process-timeout": 0
     },
     "require-dev": {
         "vlucas/phpdotenv": "^5.4"
