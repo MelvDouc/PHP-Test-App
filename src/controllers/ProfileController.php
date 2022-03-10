@@ -14,16 +14,12 @@ class ProfileController
     if (!$username || !($user = User::findOne(["username" => $username])))
       return $res->redirectNotFound();
 
-    if (!$user) {
-      echo "<pre>";
-      var_dump($req);
-      echo "</pre>";
-      exit;
-    }
+    $sessionUser = $res->session->getUser();
+    $username = $user->getUsername();
+    $isUserProfile = is_array($sessionUser) && $sessionUser["id"] === $user->getId();
+    $isAdmin = is_array($sessionUser) && $sessionUser["role"] === User::$ROLES["ADMIN"];
 
-    $res->render("profile/index", [
-      "username" => $user->getUsername()
-    ]);
+    $res->render("profile/index", compact("username", "isUserProfile", "isAdmin"));
   }
 
   public static function products(Request $req, Response $res)

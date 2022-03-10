@@ -1,0 +1,46 @@
+CREATE DATABASE IF NOT EXISTS `php_test_app`;
+
+USE `php_test_app`;
+
+CREATE TABLE IF NOT EXISTS `category` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `description` TEXT NOT NULL,
+  `image` VARCHAR(255) NOT NULL DEFAULT 'default.jpg',
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(50) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `role` INT NOT NULL DEFAULT 1,
+  `is_verified` TINYINT NOT NULL DEFAULT 0,
+  `verif_string` VARCHAR(128) DEFAULT NULL, 
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT unique_username UNIQUE(username),
+  CONSTRAINT unique_email UNIQUE(email)
+);
+
+CREATE TABLE IF NOT EXISTS `product` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `slug` VARCHAR(150) NOT NULL,
+  `description` TEXT NOT NULL,
+  `price` FLOAT(4,2) NOT NULL,
+  `quantity` INT NOT NULL DEFAULT 0,
+  `category_id` INT NOT NULL,
+  `seller_id` INT NOT NULL,
+  `image` VARCHAR(255) NOT NULL DEFAULT 'default.jpg',
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT `unique_slug` UNIQUE(slug),
+  CONSTRAINT `fk_category_id` FOREIGN KEY (category_id) REFERENCES category(id),
+  CONSTRAINT `fk_seller_id` FOREIGN KEY (seller_id) REFERENCES user(id)
+);

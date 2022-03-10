@@ -3,15 +3,13 @@
 {% block title %}Profil de {{ username }}{% endblock %}
 
 {% block main %}
-  {% if app.user %}
-    {% if app.user.role == 0 and app.user.username == username %}
-      <div><a href="{{ route('admin-home') }}">Espace Admin</a></div>
-    {% endif %}
-    <div><a href="{{ route('user-products', { username: username }) }}">Mes articles</a></div>
-    <div><a href="{{ route('add-product') }}">Ajouter un article</a></div>
-    <div><a href="{{ route('sign-out') }}">Déconnexion</a></div>
-  {% else %}
-    <div><a href="{{ route('user-products', { username: username }) }}">Articles de {{ username }}</a></div>
+  {% if isUserProfile and isAdmin %}
+  <li><a href="{{ route('admin-home') }}">Espace Admin</a></li>
+  {% endif %}
+  <li><a href="{{ route('user-products', { username: username }) }}">Voir les articles</a></li>
+  {% if isUserProfile %}
+  <li><a href="{{ route('add-product') }}">Ajouter un article</a></li>
+  <li><a href="{{ route('sign-out') }}">Déconnexion</a></li>
   {% endif %}
 
 {% endblock %}

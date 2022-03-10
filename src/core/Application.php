@@ -7,16 +7,8 @@ use TestApp\Utils\Path;
 
 class Application
 {
-  public static string $ROOT_DIR;
+  private static string $ROOT_DIR;
   public static Application $instance;
-
-  /**
-   * @return Database The database instance of the current application.
-   */
-  public static function getDb(): Database
-  {
-    return self::$instance->db;
-  }
 
   /**
    * joinPaths("views, index.twig") => "[root]/views/index.twig"
@@ -24,21 +16,6 @@ class Application
   public static function joinPaths(...$pathSegments): string
   {
     return realpath(implode("/", [self::$ROOT_DIR, ...$pathSegments]));
-  }
-
-  /**
-   * @param string $routeName - Matches the first argument of `(new Router())->addRoute()`.
-   * @param array $context - An optional associative array containing the placeholders in the route name as keys and their corresponding values. 
-   */
-  public static function getFullUrl(string $routeName, array $context = [])
-  {
-    if (!array_key_exists($routeName, self::$instance->routes))
-      throw new Exception("Invalid route name: $routeName.");
-
-    return self::$instance->baseUrl . "/" . Path::addContext(
-      self::$instance->routes[$routeName]->getPath(),
-      $context
-    );
   }
 
   public static function logError(\Exception $error): void
@@ -57,6 +34,26 @@ class Application
     $this->db = new Database();
     $this->baseUrl = ($_ENV["ENV"] === "development") ? "http://localhost:5000" : "";
     $this->routes = [];
+  }
+
+  public function getDb(): Database
+  {
+    return $this->db;
+  }
+
+  /**
+   * @param string $routeName - Matches the first argument of `(new Router())->addRoute()`.
+   * @param array $context - An optional associative array containing the placeholders in the route name as keys and their corresponding values. 
+   */
+  public function getFullUrl(string $routeName, array $context = []): string
+  {
+    if (!array_key_exists($routeName, $this->routes))
+      throw new Exception("Invalid route name: $routeName.");
+
+    return $this->baseUrl . "/" . Path::addContext(
+      $this->routes[$routeName]->getPath(),
+      $context
+    );
   }
 
   /**

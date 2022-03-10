@@ -106,7 +106,7 @@ class User extends Model
   public function save(): void
   {
     $this->verif_string = self::generateVerifString();
-    $insertion = Application::getDb()->insert(self::TABLE_NAME, [
+    $insertion = Application::$instance->getDb()->insert(self::TABLE_NAME, [
       "username" => $this->username,
       "email" => $this->email,
       "password" => $this->password,
@@ -118,7 +118,7 @@ class User extends Model
 
   public function verify()
   {
-    Application::getDb()->update(
+    Application::$instance->getDb()->update(
       self::TABLE_NAME,
       [
         "verif_string" => null,
@@ -132,7 +132,7 @@ class User extends Model
   {
     $email = new PHPMailer(true);
     $adminEmail = $_ENV["ADMIN_EMAIL_ADDRESS"];
-    $link = Application::getFullUrl("activate-account", [
+    $link = Application::$instance->getFullUrl("activate-account", [
       "verif_string" => $this->verif_string
     ]);
     $twig = new \Twig\Environment(

@@ -137,7 +137,7 @@ class Product extends Model
     if (!isset($this->slug))
       $this->setSlug();
 
-    $insertion = Application::getDb()->insert(self::TABLE_NAME, [
+    $insertion = Application::$instance->getDb()->insert(self::TABLE_NAME, [
       "name" => $this->name,
       "slug" => $this->slug,
       "description" => $this->description,
@@ -154,7 +154,7 @@ class Product extends Model
 
   public function update()
   {
-    return  Application::getDb()->update(self::TABLE_NAME, [
+    return  Application::$instance->getDb()->update(self::TABLE_NAME, [
       "name" => $this->name,
       "description" => $this->description,
       "price" => $this->price,

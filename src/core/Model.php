@@ -6,25 +6,29 @@ use DateTime;
 use Exception;
 use ReflectionProperty;
 
-class Model
+abstract class Model
 {
   public const TABLE_NAME = "";
 
   public static function findOne(array $filter): static|null
   {
-    $dbRow = Application::getDb()->getOne(static::TABLE_NAME, $filter);
+    $dbRow = Application::$instance->getDb()->getOne(static::TABLE_NAME, $filter);
     return ($dbRow) ? new static($dbRow) : null;
   }
 
   public static function findAll(array $columns = ["*"], array $filter = [], string $orderBy = "id"): array
   {
-    return Application::getDb()->getAll(static::TABLE_NAME, $columns, $filter, $orderBy);
+    return Application::$instance
+      ->getDb()
+      ->getAll(static::TABLE_NAME, $columns, $filter, $orderBy);
   }
 
   public static function findAllJoin(array $tablesAndColumns, array $joins): array
   {
     $tablesAndColumns[static::TABLE_NAME] = ["*"];
-    return Application::getDb()->join($tablesAndColumns, static::TABLE_NAME, $joins);
+    return Application::$instance
+      ->getDb()
+      ->join($tablesAndColumns, static::TABLE_NAME, $joins);
   }
 
   protected int $id;
@@ -114,7 +118,7 @@ class Model
   public function delete(): void
   {
     $tableName = static::TABLE_NAME;
-    if (!Application::getDb()->delete($tableName, ["id" => $this->id]))
+    if (!Application::$instance->getDb()->delete($tableName, ["id" => $this->id]))
       throw new Exception("[$tableName] couldn't be deleted.");
   }
 }
