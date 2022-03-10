@@ -18,9 +18,9 @@ class Application
     return realpath(implode("/", [self::$ROOT_DIR, ...$pathSegments]));
   }
 
-  public static function logError(\Exception $error): void
+  public static function logErrors(string ...$errors): void
   {
-    error_log($error->getMessage(), 3, self::joinPaths("data", "log", "php.log"));
+    error_log(implode(PHP_EOL, $errors), 3, self::joinPaths("data", "log", "php.log"));
   }
 
   private readonly Database $db;

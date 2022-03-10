@@ -5,30 +5,46 @@ namespace TestApp\Core;
 use DateTime;
 use Exception;
 use ReflectionProperty;
+use TestApp\Core\Exceptions\DatabaseException;
 
 abstract class Model
 {
   public const TABLE_NAME = "";
 
-  public static function findOne(array $filter): static|null
+  public static function findOne(array $filter): ?static
   {
-    $dbRow = Application::$instance->getDb()->getOne(static::TABLE_NAME, $filter);
-    return ($dbRow) ? new static($dbRow) : null;
+    try {
+      $dbRow = Application::$instance->getDb()->getOne(static::TABLE_NAME, $filter);
+      return ($dbRow) ? new static($dbRow) : null;
+    } catch (DatabaseException $e) {
+      Application::logErrors($e->getMessage(), $e->getSql());
+      return null;
+    }
   }
 
   public static function findAll(array $columns = ["*"], array $filter = [], string $orderBy = "id"): array
   {
-    return Application::$instance
-      ->getDb()
-      ->getAll(static::TABLE_NAME, $columns, $filter, $orderBy);
+    try {
+      return Application::$instance
+        ->getDb()
+        ->getAll(static::TABLE_NAME, $columns, $filter, $orderBy);
+    } catch (DatabaseException $e) {
+      Application::logErrors($e->getMessage(), $e->getSql());
+      return [];
+    }
   }
 
   public static function findAllJoin(array $tablesAndColumns, array $joins): array
   {
-    $tablesAndColumns[static::TABLE_NAME] = ["*"];
-    return Application::$instance
-      ->getDb()
-      ->join($tablesAndColumns, static::TABLE_NAME, $joins);
+    try {
+      $tablesAndColumns[static::TABLE_NAME] = ["*"];
+      return Application::$instance
+        ->getDb()
+        ->join($tablesAndColumns, static::TABLE_NAME, $joins);
+    } catch (DatabaseException $e) {
+      Application::logErrors($e->getMessage(), $e->getSql());
+      return [];
+    }
   }
 
   protected int $id;

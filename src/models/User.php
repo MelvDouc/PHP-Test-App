@@ -160,7 +160,7 @@ class User extends Model
       $email->Body = $htmlBody;
       return $email->send();
     } catch (PHPMailerException $e) {
-      Application::logError($e);
+      Application::logErrors($e->getMessage());
       return false;
     }
   }

@@ -4,6 +4,7 @@ namespace TestApp\Core;
 
 use PDO;
 use PDOStatement;
+use TestApp\Core\Exceptions\DatabaseException;
 
 class Database
 {
@@ -47,7 +48,6 @@ class Database
     return compact("placeholders", "values");
   }
 
-
   private static function bindValues(PDOStatement &$statement, array $values): void
   {
     foreach ($values as $i => $value)
@@ -79,37 +79,47 @@ class Database
     }
   }
 
-  private function query(string $sql): PDOStatement|false
+  private function query(string $sql): PDOStatement
   {
-    return $this->conn->query($sql);
+    $query = $this->conn->query($sql);
+    if (!$query)
+      throw new DatabaseException("Query failed.", $sql);
+    return $query;
   }
 
-  private function prepare(string $sql): PDOStatement|false
+  private function prepare(string $sql): PDOStatement
   {
-    return $this->conn->prepare($sql);
+    $statement = $this->conn->prepare($sql);
+    if (!$statement)
+      throw new DatabaseException("Statement preparation failed.", $sql);
+    return $statement;
   }
 
   public function getOne(string $tableName, array $filter)
   {
     $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause[self::PLACEHOLDERS_KEY];
-    $statement = $this->prepare("SELECT * FROM $tableName WHERE $placeholders");
+    $sql = "SELECT * FROM $tableName WHERE $placeholders";
+    $statement = $this->prepare($sql);
     self::bindValues($statement, $whereClause[self::VALUES_KEY]);
 
-    $statement->execute();
+    if (!$statement->execute())
+      throw new DatabaseException("`getOne` failed", $sql);
     return $statement->fetch();
   }
 
-  public function getAll(string $tableName, array $columns = ["*"], array $filter = []): array
+  public function getAll(string $tableName, array $columns, array $filter, string $orderBy): array
   {
     $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause[self::PLACEHOLDERS_KEY];
     $columns = self::commaJoin($columns);
-    $statement = $this->prepare("SELECT $columns FROM $tableName WHERE $placeholders");
+    $sql = "SELECT $columns FROM $tableName WHERE $placeholders ORDER BY $orderBy";
+    $statement = $this->prepare($sql);
     self::bindValues($statement, $whereClause[self::VALUES_KEY]);
 
-    $statement->execute();
-    return $statement->fetchAll();
+    if (!$statement->execute())
+      throw new DatabaseException("`getAll` failed", $sql);
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
   }
 
   public function join(array $tablesAndColumns, string $mainTable, array $joins): array
@@ -129,22 +139,27 @@ class Database
     }
 
     $joins = implode(" ", $joins);
+    $sql = "SELECT $columns FROM $mainTable $joins";
+    $queryObj = $this->query($sql);
 
-    return $this
-      ->query("SELECT $columns FROM $mainTable $joins")
-      ->fetchAll();
+    if (!$queryObj)
+      throw new DatabaseException("`join` failed", $sql);
+
+    return $queryObj->fetchAll();
   }
 
-  public function insert(string $tableName, array $keyValuePairs): bool
+  public function insert(string $tableName, array $insertions): bool
   {
-    $columns = self::commaJoin(array_keys($keyValuePairs));
-    $placeholders = self::commaJoin(array_fill(0, count($keyValuePairs), "?"));
+    $columns = self::commaJoin(array_keys($insertions));
+    $placeholders = self::commaJoin(array_fill(0, count($insertions), "?"));
+    $sql = "INSERT INTO $tableName ($columns) VALUES ($placeholders)";
 
-    $statement = $this->prepare(
-      "INSERT INTO $tableName ($columns) VALUES ($placeholders)"
-    );
-    self::bindValues($statement, array_values($keyValuePairs));
-    return $statement->execute();
+    $statement = $this->prepare($sql);
+    self::bindValues($statement, array_values($insertions));
+
+    if (!$statement->execute())
+      throw new DatabaseException("Insertion to $tableName failed", $sql);
+    return true;
   }
 
   public function update(string $tableName, array $updates, array $filter): bool
@@ -153,21 +168,29 @@ class Database
     $whereClause = self::escapeQuery($filter);
     $columns = $setClause[self::PLACEHOLDERS_KEY];
     $placeholders = $whereClause[self::PLACEHOLDERS_KEY];
+    $sql = "UPDATE $tableName SET $columns WHERE $placeholders";
 
-    $statement = $this->prepare("UPDATE $tableName SET $columns WHERE $placeholders");
+    $statement = $this->prepare($sql);
     self::bindValues(
       $statement,
       [...$setClause[self::VALUES_KEY], ...$whereClause[self::VALUES_KEY]]
     );
-    return $statement->execute();
+
+    if (!$statement->execute())
+      throw new DatabaseException("Update on $tableName failed.", $sql);
+    return true;
   }
 
   public function delete(string $tableName, array $filter): bool
   {
     $whereClause = self::escapeQuery($filter);
     $placeholders = $whereClause[self::PLACEHOLDERS_KEY];
-    $statement = $this->prepare("DELETE FROM $tableName WHERE $placeholders");
+    $sql = "DELETE FROM $tableName WHERE $placeholders";
+    $statement = $this->prepare($sql);
     self::bindValues($statement, $whereClause[self::VALUES_KEY]);
-    return $statement->execute();
+
+    if (!$statement->execute())
+      throw new DatabaseException("Deletion on $tableName failed.", $sql);
+    return true;
   }
 }

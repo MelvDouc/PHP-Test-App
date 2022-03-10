@@ -4,13 +4,15 @@ namespace TestApp\Core;
 
 class Request
 {
+  private array $query;
   private array $body;
   private array $middlewareData = [];
   private array $params = [];
 
   public function __construct()
   {
-    $this->body = $_POST;
+    $this->query = $_GET;
+    $this->body = array_map("trim", $_POST);
   }
 
   public function getMethod(): string
@@ -25,10 +27,10 @@ class Request
 
   public function getQuery(): array
   {
-    return $_GET;
+    return $this->query;
   }
 
-  public function getParam(string $key): string|null
+  public function getParam(string $key): ?string
   {
     return $this->params[$key] ?? null;
   }
@@ -64,21 +66,23 @@ class Request
   public function getBody(string $key = null, mixed $default = null): mixed
   {
     if (!$key)
-      return array_map("trim", $this->body);
+      return $this->body;
 
     if (!isset($this->body[$key]))
       return $default;
 
-    $value = trim($this->body[$key]);
-    $type = gettype($default);
-    if ($type === "string")
-      return $value;
-    if ($type === "int")
-      return (int) $value;
-    if ($type === "float")
-      return (float) $value;
-    if ($type === "bool")
-      return (bool) $value;
-    return $value;
+    $value = $this->body[$key];
+
+    switch (gettype($default)) {
+      case "int":
+        return (int)$value;
+      case "float":
+        return (float) $value;
+      case "bool":
+        return (bool) $value;
+      case "string":
+      default:
+        return $value;
+    }
   }
 }

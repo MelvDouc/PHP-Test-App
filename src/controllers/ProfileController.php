@@ -27,11 +27,10 @@ class ProfileController
     $username = $req->getParam("username");
     if (!$username || !($user = User::findOne(["username" => $username])))
       return $res->redirectNotFound();
-    $products = $user->getProducts();
 
     return $res->render("profile/products", [
       "username" => $user->getUsername(),
-      "products" => $products
+      "products" => $user->getProducts()
     ]);
   }
 }
