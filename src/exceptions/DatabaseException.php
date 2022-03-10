@@ -1,6 +1,6 @@
 <?php
 
-namespace TestApp\Core\Exceptions;
+namespace TestApp\Exceptions;
 
 class DatabaseException extends \Exception
 {

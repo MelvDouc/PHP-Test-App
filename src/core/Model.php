@@ -5,7 +5,7 @@ namespace TestApp\Core;
 use DateTime;
 use Exception;
 use ReflectionProperty;
-use TestApp\Core\Exceptions\DatabaseException;
+use TestApp\Exceptions\DatabaseException;
 
 abstract class Model
 {

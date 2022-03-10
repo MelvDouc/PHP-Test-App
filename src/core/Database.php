@@ -4,7 +4,7 @@ namespace TestApp\Core;
 
 use PDO;
 use PDOStatement;
-use TestApp\Core\Exceptions\DatabaseException;
+use TestApp\Exceptions\DatabaseException;
 
 class Database
 {
