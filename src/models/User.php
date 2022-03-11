@@ -4,7 +4,7 @@ namespace TestApp\Models;
 
 use TestApp\Core\Model;
 use TestApp\Core\Application;
-use TestApp\Utils\StringUtils;
+use TestApp\Services\StringService;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
@@ -19,7 +19,7 @@ class User extends Model
 
   private static function generateVerifString(): string
   {
-    $verif_string = StringUtils::getRandomString(128);
+    $verif_string = StringService::getRandomString(128);
     if ((bool) self::findOne(["verif_string" => $verif_string]))
       return self::generateVerifString();
     return $verif_string;

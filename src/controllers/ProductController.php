@@ -8,7 +8,7 @@ use TestApp\Core\Response;
 use TestApp\Models\Category;
 use TestApp\Models\Product;
 use TestApp\Models\User;
-use TestApp\Utils\ImageValidator;
+use TestApp\Services\ImageService;
 
 class ProductController
 {
@@ -50,7 +50,7 @@ class ProductController
     $product = new Product($req->getBody());
     $image = $_FILES["image"] ?? null;
 
-    $errors = array_merge($product->getErrors(), ImageValidator::check($image));
+    $errors = array_merge($product->getErrors(), ImageService::check($image));
 
     if ($errors) {
       $res->session->setErrorMessages($errors);
@@ -114,7 +114,7 @@ class ProductController
 
     $errors = $product->getErrors();
     if (!$useDefaultImage)
-      array_push($errors, ...ImageValidator::check($image));
+      array_push($errors, ...ImageService::check($image));
 
     if ($errors) {
       $res->session->setErrorMessages($errors);

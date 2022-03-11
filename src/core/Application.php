@@ -3,7 +3,7 @@
 namespace TestApp\Core;
 
 use Exception;
-use TestApp\Utils\Path;
+use TestApp\Services\Path;
 
 class Application
 {

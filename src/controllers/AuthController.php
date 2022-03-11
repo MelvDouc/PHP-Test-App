@@ -6,7 +6,7 @@ use TestApp\Core\Controller;
 use TestApp\Core\Request;
 use TestApp\Core\Response;
 use TestApp\Models\User;
-use TestApp\Utils\StringUtils;
+use TestApp\Services\StringService;
 
 class AuthController extends Controller
 {
@@ -180,6 +180,6 @@ class AuthController extends Controller
     if ($password1 !== $password2)
       $errors[] = "Les mots de passe ne se correspondent pas.";
 
-    return [...$errors, ...StringUtils::checkPasswordStrength($password1)];
+    return [...$errors, ...StringService::checkPasswordStrength($password1)];
   }
 }

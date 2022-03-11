@@ -1,8 +1,8 @@
 <?php
 
-namespace TestApp\Utils;
+namespace TestApp\Services;
 
-class ImageValidator
+class ImageService
 {
   private const MAX_SIZE = 2e6;
   private static array $ALLOWED_TYPES = ["jpg", "jpeg", "png", "gif"];

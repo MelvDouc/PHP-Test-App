@@ -1,8 +1,8 @@
 <?php
 
-namespace TestApp\Utils;
+namespace TestApp\Services;
 
-class StringUtils
+class StringService
 {
   public const PASSWORD_PATTERN = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/";
   private const CHARS = "0123456789abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";

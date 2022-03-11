@@ -18,13 +18,13 @@ class Route
     return $this->path;
   }
 
-  public function get(callable ...$actions)
+  public function get(string|callable ...$actions)
   {
     $this->actions["GET"] = $actions;
     return $this;
   }
 
-  public function post(callable ...$actions)
+  public function post(string|callable ...$actions)
   {
     $this->actions["POST"] = $actions;
     return $this;
