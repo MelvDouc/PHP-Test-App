@@ -4,7 +4,7 @@
 
 {% block main %}
   <p>{{ product.description }}</p>
-  <img src="/static/img/product/{{ product.image }}" alt="{{ product.name }}" />
+  <img src="/img/product/{{ product.image }}" alt="{{ product.name }}" />
 
   <div><a href="{{ route('profile-home', { username: sellerUsername }) }}">{{ sellerUsername }}</a></div>
 {% endblock %}

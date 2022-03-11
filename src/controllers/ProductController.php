@@ -74,7 +74,7 @@ class ProductController
       return $res->redirect("product", ["slug" => $product->getSlug()]);
     } catch (\Exception $e) {
       $res->session->setErrorMessages("L'article n'a pas pu être ajouté.");
-      Application::logError($e);
+      Application::logErrors($e->getMessage());
       return $res->redirect("add-product");
     }
   }
@@ -106,13 +106,15 @@ class ProductController
       ->setPrice($req->getBody("price", 1))
       ->setQuantity($req->getBody("quantity", 0))
       ->setCategoryId($req->getBody("category_id", $product->getCategoryId()));
-    $newImage = (isset($_FILES["image"]) && isset($_FILES["image"]["error"]) && $_FILES["image"]["error"] === 0)
-      ? $_FILES["image"]
-      : null;
+
+    $useDefaultImage = $req->getBody("use-default-image", false);
+
+    if (!$useDefaultImage)
+      $image = $_FILES["image"] ?? null;
 
     $errors = $product->getErrors();
-    if ($newImage)
-      array_push($errors, ...ImageValidator::check($newImage));
+    if (!$useDefaultImage)
+      array_push($errors, ...ImageValidator::check($image));
 
     if ($errors) {
       $res->session->setErrorMessages($errors);
@@ -126,8 +128,10 @@ class ProductController
       return $res->redirect("update-product", ["slug" => $product->getSlug()]);
     }
 
-    if ($newImage)
-      $product->addImage($newImage);
+    if ($useDefaultImage)
+      $product->setDefaultImage();
+    else
+      $product->addImage($image);
 
     $product->update();
     $res->session->setSuccessMessage("L'article a bien été modifié.");
@@ -149,7 +153,7 @@ class ProductController
       $res->session->setSuccessMessage("L'article \"$name\" a bien été supprimé.");
     } catch (\Exception $e) {
       $res->session->setErrorMessages("L'article \"$name\" n'a pas pu être supprimé.");
-      Application::logError($e);
+      Application::logErrors($e->getMessage());
     } finally {
       return $res->redirect("admin-products-list");
     }

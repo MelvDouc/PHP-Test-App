@@ -13,7 +13,7 @@
         }
     },
     "scripts": {
-        "dev": "php -S localhost:5000"
+        "dev": "php -S localhost:5000 -t public"
     },
     "require": {
         "phpmailer/phpmailer": "^6.6",

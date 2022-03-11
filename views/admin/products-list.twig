@@ -35,7 +35,9 @@
           </td>
           <td>{{ product.created_at }}</td>
           <td>
-            <a href="{{ route('update-product', {slug: product.slug}) }}">Modifier</a>
+            <a href="{{ route('update-product', {slug: product.slug}) }}">
+              <button>Modifier</button>
+            </a>
             <form
               action="{{ route('delete-product', {id: product.id}) }}"
               is="confirm-form"

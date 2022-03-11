@@ -10,6 +10,7 @@ use TestApp\Exceptions\DatabaseException;
 abstract class Model
 {
   public const TABLE_NAME = "";
+  private const DEFAULT_IMAGE = "default.jpg";
 
   public static function findOne(array $filter): ?static
   {
@@ -48,7 +49,7 @@ abstract class Model
   }
 
   protected int $id;
-  protected string $image = "default.jpg";
+  protected string $image = self::DEFAULT_IMAGE;
   protected DateTime $created_at;
 
   public function __construct(array $arr = [])
@@ -121,13 +122,19 @@ abstract class Model
     return $this;
   }
 
+  public function setDefaultImage()
+  {
+    $this->image = self::DEFAULT_IMAGE;
+    return $this;
+  }
+
   public function addImage(array $img): void
   {
     $pathInfo = pathinfo($img["name"]);
     $this->image = md5($pathInfo["filename"]) . "." . $pathInfo["extension"];
     move_uploaded_file(
       $img["tmp_name"],
-      Application::joinPaths("static", "img", static::TABLE_NAME, $this->image)
+      Application::joinPaths("public", "img", static::TABLE_NAME, $this->image)
     );
   }
 

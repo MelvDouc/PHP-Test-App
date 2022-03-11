@@ -3,6 +3,10 @@
 {% block title %}Modifier un article{% endblock %}
 
 {% block main %}
+  <div style="max-width: 500px">
+    <img src="/img/product/{{ product.image }}" alt="{{ product.name }}" style="max-width: 100%" />
+  </div>
+
   <form action="{{ route('update-product', {slug: product.slug}) }}" method="POST" enctype="multipart/form-data">
     <div>
       <label for="name">Nom de l'article</label>
@@ -33,6 +37,10 @@
     <div>
       <label for="image">Image</label>
       <input type="file" name="image" id="image" />
+    </div>
+    <div>
+      <input type="checkbox" id="use-default-image" name="use-default-image" />
+      <label for="use-default-image">Utiliser l'image par défault</label>
     </div>
     <div>
       <input type="submit" value="Modifier" />

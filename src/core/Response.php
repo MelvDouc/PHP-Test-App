@@ -29,7 +29,7 @@ class Response
   {
     $options = [];
     if ($_ENV["ENV"] === "production")
-      $options["cache"] = Application::joinPaths("static", "compilation-cache");
+      $options["cache"] = Application::joinPaths("compilation-cache");
     $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(Application::joinPaths("views")), $options);
     $twig->addFunction(new \Twig\TwigFunction("route", function ($routeName, $context = []) {
       return Application::$instance->getFullUrl($routeName, $context);
