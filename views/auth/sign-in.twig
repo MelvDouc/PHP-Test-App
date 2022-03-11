@@ -7,11 +7,25 @@
   <form action="{{ route('sign-in') }}" method="POST">
     <div>
       <label for="username_or_email">Nom d'utilisateur ou adresse email</label>
-      <input type="text" id="username_or_email" name="username_or_email" value="{{ app.formData.username_or_email }}" required />
+      <input
+        type="text"
+        id="username_or_email"
+        name="username_or_email"
+        value="{{ app.formData.username_or_email }}"
+        autofocus
+        required
+      />
     </div>
     <div>
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" value="{{ app.formData.password }}" required />
+      <input
+        type="password"
+        id="password"
+        name="password"
+        autocomplete="password"
+        value="{{ app.formData.password }}"
+        required
+      />
     </div>
     <div>
       <button type="submit">Connexion</button>

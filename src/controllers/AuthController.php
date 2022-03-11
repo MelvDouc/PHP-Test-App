@@ -157,9 +157,18 @@ class AuthController extends Controller
   {
     if (!$username || !$email || !$password1 || !$password2)
       return ["Veuillez remplir tous les champs."];
-    if ((bool) User::findOne(["email" => $email]))
+
+    $existingUser = User::findOne([
+      "OR" => [
+        "username" => $username,
+        "email" => $email
+      ]
+    ]);
+
+    if ($existingUser && $existingUser->getEmail() === $email)
       return ["Un compte à cette adresse email existe déjà."];
-    if ((bool) User::findOne(["username" => $username]))
+
+    if ($existingUser && $existingUser->getUsername() === $username)
       return ["Nom d'utilisateur indisponible."];
 
     $errors = [];

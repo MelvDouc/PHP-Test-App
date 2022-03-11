@@ -10,27 +10,59 @@
   <form action="{{ route('update-product', {slug: product.slug}) }}" method="POST" enctype="multipart/form-data">
     <div>
       <label for="name">Nom de l'article</label>
-      <input type="text" id="name" name="name" value="{{ product.name }}" required />
+      <input
+        type="text"
+        id="name"
+        name="name"
+        minlength="5"
+        maxlength="100"
+        value="{{ product.name }}"
+        required
+      />
     </div>
     <div>
       <label for="description">Description</label>
-      <textarea name="description" id="description">{{ product.description }}</textarea>
+      <textarea
+        name="description"
+        id="description"
+        cols="30"
+        rows="5"
+        autocomplete="on"
+        required
+      >{{ product.description }}</textarea>
     </div>
     <div>
       <label for="price">Prix</label>
-      <input type="number" name="price" id="price" value="{{ product.price }}" required />
+      <input
+        type="number"
+        name="price"
+        id="price"
+        min="0"
+        step="1"
+        value="{{ product.price }}"
+        required
+      />
     </div>
     <div>
       <label for="quantity">Quantité</label>
-      <input type="number" name="quantity" id="quantity" value="{{ product.quantity }}" required />
+      <input
+        type="number"
+        name="quantity"
+        id="quantity"
+        min="1"
+        step="1"
+        value="{{ product.quantity }}"
+        required
+      />
     </div>
     <div>
       <label for="category_id">Catégorie</label>
       <select name="category_id" id="category_id">
         {% for category in categories %}
-          <option value="{{ category.id }}" {{ product.category_id == category.id ? "selected" : "" }}>
-            {{ category.name }}
-          </option>
+          <option
+            value="{{ category.id }}"
+            {% if app.formData.category_id == category.id %}selected{% endif %}
+            >{{ category.name }}</option>
         {% endfor %}
       </select>
     </div>

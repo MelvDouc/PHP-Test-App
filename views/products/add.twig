@@ -6,25 +6,59 @@
   <form action="{{ route('add-product') }}" method="POST" enctype="multipart/form-data">
     <div>
       <label for="name">Nom de l'article</label>
-      <input type="text" id="name" name="name" value="{{ app.formData.name }}" required />
+      <input
+        type="text"
+        id="name"
+        name="name"
+        minlength="5"
+        maxlength="100"
+        value="{{ app.formData.name }}"
+        required
+      />
     </div>
     <div>
       <label for="description">Description</label>
-      <textarea name="description" id="description">{{ app.formData.description }}</textarea>
+      <textarea
+        name="description"
+        id="description"
+        cols="30"
+        rows="5"
+        autocomplete="on"
+        required
+      >{{ app.formData.description }}</textarea>
     </div>
     <div>
       <label for="price">Prix</label>
-      <input type="number" name="price" id="price" value="{{ app.formData.price }}" required />
+      <input
+        type="number"
+        name="price"
+        id="price"
+        min="0"
+        step="1"
+        value="{{ app.formData.price }}"
+        required
+      />
     </div>
     <div>
       <label for="quantity">Quantité</label>
-      <input type="number" name="quantity" id="quantity" value="{{ app.formData.quantity ? app.formData.quantity : 1 }}" required />
+      <input
+        type="number"
+        name="quantity"
+        id="quantity"
+        min="1"
+        step="1"
+        value="{{ app.formData.quantity ? app.formData.quantity : 1 }}"
+        required
+      />
     </div>
     <div>
       <label for="category_id">Catégorie</label>
       <select name="category_id" id="category_id">
         {% for category in categories %}
-          <option value="{{ category.id }}" {{ app.formData.category_id == category.id ? "selected" : "" }}>{{ category.name }}</option>
+          <option
+            value="{{ category.id }}"
+            {% if app.formData.category_id == category.id %}selected{% endif %}
+          >{{ category.name }}</option>
         {% endfor %}
       </select>
     </div>

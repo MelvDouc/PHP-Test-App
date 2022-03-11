@@ -1,7 +1,7 @@
 SetEnv HTTP_HOST "http://localhost:5000"
 
 RewriteEngine On
-RewriteBase /My-Project/
+RewriteBase /test-app/
 
 RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,NE,R=302]
